@@ -9,7 +9,7 @@ public class Organization {
 	private String title = "";
 	
 	public void setOfficeLocation(String officelocation) {
-		this.officelocation = officelocation;
+		this.officelocation = officelocation.trim();
 	}
 
 	public String getOfficeLocation() {
@@ -17,7 +17,7 @@ public class Organization {
 	}
 	
 	public void setCompany(String company) {
-		this.company = "UF: " + company;
+		this.company = "UF: " + company.trim();
 	}
 
 	public String getCompany() {
@@ -25,7 +25,7 @@ public class Organization {
 	}
 	
 	public void setTitle(String title) {
-		this.title = title;
+		this.title = title.trim();
 	}
 
 	public String getTitle() {
