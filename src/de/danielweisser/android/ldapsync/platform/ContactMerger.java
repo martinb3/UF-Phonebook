@@ -186,7 +186,7 @@ public class ContactMerger {
 			cv.put(ContactsContract.Data.MIMETYPE, PROFILE_MIME_TYPE);
 			cv.put(ContactsContract.Data.DATA1, dn);
 			cv.put(ContactsContract.Data.DATA2, "UF Directory");
-			cv.put(ContactsContract.Data.DATA3, "Click to view1");
+			cv.put(ContactsContract.Data.DATA3, "Click to view");
 			cv.put(ContactsContract.Data.DATA4, newC.getUfid());
 			
 			Builder insertOp = createInsert(rawContactId, cv);
@@ -202,7 +202,7 @@ public class ContactMerger {
 			// after, to update
 			cv.put(ContactsContract.Data.DATA1, dn);
 			cv.put(ContactsContract.Data.DATA2, "UF Directory");
-			cv.put(ContactsContract.Data.DATA3, "Click to view2");
+			cv.put(ContactsContract.Data.DATA3, "Click to view");
 			cv.put(ContactsContract.Data.DATA4, newC.getUfid());
 			
 			ops.add(ContentProviderOperation.newUpdate(addCallerIsSyncAdapterFlag(Data.CONTENT_URI)).withSelection(selection,
