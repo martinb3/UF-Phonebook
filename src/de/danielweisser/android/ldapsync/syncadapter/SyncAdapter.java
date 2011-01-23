@@ -81,7 +81,12 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 			mappingBundle.putString(Contact.ZIP, mAccountManager.getUserData(account, LDAPAuthenticatorActivity.PARAM_MAPPING + Contact.ZIP));
 			mappingBundle.putString(Contact.STATE, mAccountManager.getUserData(account, LDAPAuthenticatorActivity.PARAM_MAPPING + Contact.STATE));
 			mappingBundle.putString(Contact.COUNTRY, mAccountManager.getUserData(account, LDAPAuthenticatorActivity.PARAM_MAPPING + Contact.COUNTRY));
+			mappingBundle.putString(Contact.OFFICELOCATION, mAccountManager.getUserData(account, LDAPAuthenticatorActivity.PARAM_MAPPING + Contact.OFFICELOCATION));
+			mappingBundle.putString(Contact.COMPANY, mAccountManager.getUserData(account, LDAPAuthenticatorActivity.PARAM_MAPPING + Contact.COMPANY));
+			mappingBundle.putString(Contact.TITLE, mAccountManager.getUserData(account, LDAPAuthenticatorActivity.PARAM_MAPPING + Contact.TITLE));
+			
 			users = LDAPUtilities.fetchContacts(ldapServer, baseDN, searchFilter, mappingBundle, mLastUpdated, this.getContext());
+			
 			if (users == null) {
 				syncResult.stats.numIoExceptions++;
 				return;

@@ -4,9 +4,8 @@
 
     <ContactsDataKind
         android:mimeType="vnd.android.cursor.item/vnd.ldapsyncadapter.profile"
-        android:icon="@drawable/icon"
+        android:icon="@drawable/ufdir"
         android:summaryColumn="data2"
         android:detailColumn="data3"
         android:detailSocialSummary="true" />
-
 </ContactsSource>

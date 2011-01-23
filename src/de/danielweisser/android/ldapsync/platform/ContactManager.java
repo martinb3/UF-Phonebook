@@ -14,6 +14,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.OperationApplicationException;
 import android.content.SyncResult;
+import android.content.ContentProviderOperation.Builder;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteException;
 import android.net.Uri;
@@ -24,6 +25,7 @@ import android.provider.ContactsContract.Groups;
 import android.provider.ContactsContract.RawContacts;
 import android.provider.ContactsContract.Settings;
 import android.provider.ContactsContract.CommonDataKinds.Email;
+import android.provider.ContactsContract.CommonDataKinds.Organization;
 import android.provider.ContactsContract.CommonDataKinds.Phone;
 import android.provider.ContactsContract.CommonDataKinds.Photo;
 import android.provider.ContactsContract.CommonDataKinds.StructuredName;
@@ -135,13 +137,22 @@ public class ContactManager {
 						address.setZip(c.getString(c.getColumnIndex(Data.DATA9)));
 						address.setState(c.getString(c.getColumnIndex(Data.DATA8)));
 						if (type == StructuredPostal.TYPE_WORK) {
-							existingContact.setAddress(address);
+							existingContact.setWorkAddress(address);
+						}
+					} else if (mimetype.equals(Organization.CONTENT_ITEM_TYPE)) { //organization
+						int type = c.getInt(c.getColumnIndex(Data.DATA2));
+						de.danielweisser.android.ldapsync.client.Organization org = new de.danielweisser.android.ldapsync.client.Organization();
+						org.setTitle(c.getString(c.getColumnIndex(Data.DATA4)));
+						org.setCompany(c.getString(c.getColumnIndex(Data.DATA1)));
+						org.setOfficeLocation(c.getString(c.getColumnIndex(Data.DATA9)));
+						if (type == Organization.TYPE_WORK) {
+							existingContact.setWorkOrganization(org);
 						}
 					}
 				}
 			}
 
-			prepareFields(rawContactId, contact, existingContact, ops, false);
+			prepareFields(rawContactId, contact, existingContact, ops, false, contact.getDn());
 
 			if (ops.size() > 0) {
 				resolver.applyBatch(ContactsContract.AUTHORITY, ops);
@@ -209,12 +220,14 @@ public class ContactManager {
 		cv.put(RawContacts.ACCOUNT_TYPE, Constants.ACCOUNT_TYPE);
 		cv.put(RawContacts.ACCOUNT_NAME, accountName);
 		cv.put(RawContacts.SOURCE_ID, contact.getDn());
+		cv.put(RawContacts.SYNC1, contact.getDn());
 
 		// This is the first insert into the raw contacts table
-		ContentProviderOperation i1 = ContentProviderOperation.newInsert(uri).withValues(cv).build();
+		Builder builder = ContentProviderOperation.newInsert(uri).withValues(cv);
+		ContentProviderOperation i1 = builder.build();
 		ops.add(i1);
 
-		prepareFields(-1, contact, new Contact(), ops, true);
+		prepareFields(-1, contact, new Contact(), ops, true, contact.getDn());
 
 		// Now create the contact with a single batch operation
 		try {
@@ -227,7 +240,7 @@ public class ContactManager {
 		}
 	}
 
-	private void prepareFields(long rawContactId, Contact newC, Contact existingC, ArrayList<ContentProviderOperation> ops, boolean isNew) {
+	private void prepareFields(long rawContactId, Contact newC, Contact existingC, ArrayList<ContentProviderOperation> ops, boolean isNew, String dn) {
 		ContactMerger contactMerger = new ContactMerger(rawContactId, newC, existingC, ops, l);
 		contactMerger.updateName();
 		contactMerger.updateMail(Email.TYPE_WORK);
@@ -237,8 +250,11 @@ public class ContactManager {
 		contactMerger.updatePhone(Phone.TYPE_HOME);
 
 		contactMerger.updateAddress(StructuredPostal.TYPE_WORK);
+		
+		contactMerger.updateOrganization(Organization.TYPE_WORK);
 
 		contactMerger.updatePicture();
+		contactMerger.updateCustomProfile(dn);
 	}
 
 	public static void makeGroupVisible(String accountName, ContentResolver resolver) {

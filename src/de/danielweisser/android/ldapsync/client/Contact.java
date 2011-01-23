@@ -13,6 +13,11 @@ import com.unboundid.ldap.sdk.ReadOnlyEntry;
  * Represents a LDAPSyncAdapter contact.
  * 
  * @author <a href="mailto:daniel.weisser@gmx.de">Daniel Weisser</a>
+ *
+ * TODO: attrs
+ * o: IT-CNS SA OPEN SYSTEMS GROUP
+ * title: IT Expert
+ * 
  */
 public class Contact {
 	public static String FIRSTNAME = "FIRSTNAME";
@@ -27,7 +32,11 @@ public class Contact {
 	public static String STATE = "STATE";
 	public static String ZIP = "ZIP";
 	public static String COUNTRY = "COUNTRY";
-
+	
+	public static String OFFICELOCATION = "UFLEDUOFFICELOCATION";
+	public static String COMPANY = "O";
+	public static String TITLE = "TITLE";
+	
 	private String dn = "";
 	private String firstName = "";
 	private String lastName = "";
@@ -35,8 +44,11 @@ public class Contact {
 	private String workPhone = "";
 	private String homePhone = "";
 	private String[] emails = null;
+	
 	private byte[] image = null;
-	private Address address = null;
+	private Address waddress = null;
+	private Organization worg = null;
+	
 
 	public String getDn() {
 		return dn;
@@ -101,15 +113,23 @@ public class Contact {
 	public void setImage(byte[] image) {
 		this.image = image;
 	}
-
-	public void setAddress(Address address) {
-		this.address = address;
+	
+	public void setWorkOrganization(Organization worg) {
+		this.worg = worg;
 	}
 
-	public Address getAddress() {
-		return address;
+	public Organization getWorkOrganization() {
+		return worg;
 	}
 
+	public void setWorkAddress(Address waddress) {
+		this.waddress = waddress;
+	}
+
+	public Address getWorkAddress() {
+		return waddress;
+	}
+	
 	/**
 	 * Creates and returns an instance of the user from the provided LDAP data.
 	 * 
@@ -133,6 +153,7 @@ public class Contact {
 			c.setCellWorkPhone(user.hasAttribute(mB.getString(MOBILE)) ? user.getAttributeValue(mB.getString(MOBILE)) : null);
 			c.setHomePhone(user.hasAttribute(mB.getString(HOMEPHONE)) ? user.getAttributeValue(mB.getString(HOMEPHONE)) : null);
 			c.setEmails(user.hasAttribute(mB.getString(MAIL)) ? user.getAttributeValues(mB.getString(MAIL)) : null);
+			
 			byte[] image = null;
 			if (user.hasAttribute(mB.getString(PHOTO))) {
 				byte[] array = user.getAttributeValueBytes(mB.getString(PHOTO));
@@ -153,7 +174,17 @@ public class Contact {
 			c.setImage(image);
 
 			// Get address
-			if (user.hasAttribute(mB.getString(STREET)) || user.hasAttribute(mB.getString(CITY)) || user.hasAttribute(mB.getString(STATE))
+			if(user.hasAttribute(mB.getString(STREET)) && user.getAttributeValue(mB.getString(STREET)).contains("$")) {
+				Address a = new Address();
+				//LINE1$LINE2$LINE3$CITY, STATE, COUNTRY$ZIP
+				String input = user.getAttributeValue(mB.getString(STREET))
+					.replace("$", ", ")
+					.replace(" FL, US", " FL");
+					;
+				a.setStreet(input);
+				c.setWorkAddress(a);
+			}
+			else if (user.hasAttribute(mB.getString(STREET)) || user.hasAttribute(mB.getString(CITY)) || user.hasAttribute(mB.getString(STATE))
 					|| user.hasAttribute(mB.getString(ZIP)) || user.hasAttribute(mB.getString(COUNTRY))) {
 				Address a = new Address();
 				a.setStreet(user.hasAttribute(mB.getString(STREET)) ? user.getAttributeValue(mB.getString(STREET)) : null);
@@ -161,10 +192,30 @@ public class Contact {
 				a.setState(user.hasAttribute(mB.getString(STATE)) ? user.getAttributeValue(mB.getString(STATE)) : null);
 				a.setZip(user.hasAttribute(mB.getString(ZIP)) ? user.getAttributeValue(mB.getString(ZIP)) : null);
 				a.setCountry(user.hasAttribute(mB.getString(COUNTRY)) ? user.getAttributeValue(mB.getString(COUNTRY)) : null);
-				c.setAddress(a);
+				c.setWorkAddress(a);
+			}
+			
+			// Get organization
+			if(user.hasAttribute(mB.getString(OFFICELOCATION)) || user.hasAttribute(mB.getString(COMPANY)) || user.hasAttribute(mB.getString(TITLE))) {
+
+				Organization o = new Organization();
+				o.setCompany(user.hasAttribute(mB.getString(COMPANY)) ? user.getAttributeValue(mB.getString(COMPANY)) : null);
+				o.setTitle(user.hasAttribute(mB.getString(TITLE)) ? user.getAttributeValue(mB.getString(TITLE)) : null);
+
+				//LINE1$LINE2$LINE3$CITY, STATE, COUNTRY$ZIP
+				String input = user.getAttributeValue(mB.getString(OFFICELOCATION))
+					.replace("$", ", ")
+					.replace(" FL, US", " FL");
+					;
+					
+				o.setOfficeLocation(input);
+				c.setWorkOrganization(o);
 			}
 		} catch (final Exception ex) {
-			Log.i("User", "Error parsing LDAP user object" + ex.toString());
+			Log.i("User", "Error parsing LDAP user object: " + ex.toString());
+			for(StackTraceElement ste : ex.getStackTrace()) {
+				Log.i("User", "Element: " + ste.toString());
+			}
 		}
 		return c;
 	}

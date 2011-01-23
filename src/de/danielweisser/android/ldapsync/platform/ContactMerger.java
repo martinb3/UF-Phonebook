@@ -1,5 +1,6 @@
 package de.danielweisser.android.ldapsync.platform;
 
+
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -10,12 +11,12 @@ import android.net.Uri;
 import android.provider.ContactsContract;
 import android.provider.ContactsContract.Data;
 import android.provider.ContactsContract.CommonDataKinds.Email;
+import android.provider.ContactsContract.CommonDataKinds.Organization;
 import android.provider.ContactsContract.CommonDataKinds.Phone;
 import android.provider.ContactsContract.CommonDataKinds.Photo;
 import android.provider.ContactsContract.CommonDataKinds.StructuredName;
 import android.provider.ContactsContract.CommonDataKinds.StructuredPostal;
 import android.text.TextUtils;
-import de.danielweisser.android.ldapsync.client.Address;
 import de.danielweisser.android.ldapsync.client.Contact;
 import de.danielweisser.android.ldapsync.syncadapter.Logger;
 
@@ -60,7 +61,7 @@ public class ContactMerger {
 			ops.add(updateOp.build());
 		}
 	}
-
+	
 	private Builder createInsert(long rawContactId, ContentValues cv) {
 		Builder insertOp = ContentProviderOperation.newInsert(addCallerIsSyncAdapterFlag(Data.CONTENT_URI)).withValues(cv);
 		if (rawContactId == -1) {
@@ -171,21 +172,62 @@ public class ContactMerger {
 			ops.add(updateOp.build());
 		}
 	}
-
-	public void updateAddress(int adressType) {
-		if (adressType == StructuredPostal.TYPE_WORK) {
-			updateAddress(newC.getAddress(), existingC.getAddress(), adressType);
+	
+	public void updateCustomProfile(String dn) {
+		//Create a Data record of custom type "vnd.android.cursor.item/vnd.fm.last.android.profile" to display a link to the Last.fm profile
+		String PROFILE_MIME_TYPE = "vnd.android.cursor.item/vnd.ldapsyncadapter.profile";
+		
+		if(rawContactId == -1) {
+			l.d("Create new profile item for " + newC);
+			ContentValues cv = new ContentValues();
+			
+			// first insert / create
+			cv.put(ContactsContract.Data.MIMETYPE, PROFILE_MIME_TYPE);
+			cv.put(ContactsContract.Data.DATA1, dn);
+			cv.put(ContactsContract.Data.DATA2, "UF Directory");
+			cv.put(ContactsContract.Data.DATA3, "Click to view");
+			
+			Builder insertOp = createInsert(rawContactId, cv);
+			ops.add(insertOp.build());
+		} else {
+			String selection = Data.RAW_CONTACT_ID + "=? AND " + ContactsContract.Data.MIMETYPE + "=?";
+			l.d("Delete existing profile for " + dn);
+			
+			ContentValues cv = new ContentValues();
+			
+			// after, to update
+			cv.put(ContactsContract.Data.DATA1, dn);
+			cv.put(ContactsContract.Data.DATA2, "UF Directory");
+			cv.put(ContactsContract.Data.DATA3, "Click to view");
+			
+			ops.add(ContentProviderOperation.newUpdate(addCallerIsSyncAdapterFlag(Data.CONTENT_URI)).withSelection(selection,
+				new String[] { rawContactId + "",  PROFILE_MIME_TYPE})
+				.withValues(cv)
+				.build());
+			
 		}
 	}
 
-	private void updateAddress(de.danielweisser.android.ldapsync.client.Address newAddress, Address existingAddress, int adressType) {
+	public void updateAddress(int adressType) {
+		if (adressType == StructuredPostal.TYPE_WORK) {
+			updateAddress(newC.getWorkAddress(), existingC.getWorkAddress(), adressType);
+		}
+	}
+
+	public void updateOrganization(int orgType) {
+		if (orgType == Organization.TYPE_WORK) {
+			updateOrganization(newC.getWorkOrganization(), existingC.getWorkOrganization(), orgType);
+		}
+	}
+	
+	private void updateAddress(de.danielweisser.android.ldapsync.client.Address newAddress, de.danielweisser.android.ldapsync.client.Address existingAddress, int adressType) {
 		final String selection = Data.RAW_CONTACT_ID + "=? AND " + Data.MIMETYPE + "=? AND " + StructuredPostal.TYPE + "=?";
 		if ((newAddress == null || newAddress.isEmpty()) && existingAddress != null) {
-			l.d("Delete address " + adressType + "(" + existingC.getFirstName() + " " + existingC.getLastName() + ")");
+			l.d("Delete address " + adressType + "(" + existingC.getFirstName() + " " + existingC.getLastName() + "), " + newAddress);
 			ops.add(ContentProviderOperation.newDelete(addCallerIsSyncAdapterFlag(Data.CONTENT_URI)).withSelection(selection,
 					new String[] { rawContactId + "", StructuredPostal.CONTENT_ITEM_TYPE, adressType + "" }).build());
 		} else if (existingAddress == null && newAddress != null && !newAddress.isEmpty()) {
-			l.d("Add address " + adressType + "(" + existingC.getFirstName() + " " + existingC.getLastName() + ")");
+			l.d("Add address " + adressType + "(" + existingC.getFirstName() + " " + existingC.getLastName() + "), " + newAddress);
 			ContentValues cv = new ContentValues();
 			cv.put(StructuredPostal.MIMETYPE, StructuredPostal.CONTENT_ITEM_TYPE);
 			cv.put(StructuredPostal.TYPE, adressType);
@@ -197,7 +239,7 @@ public class ContactMerger {
 			Builder insertOp = createInsert(rawContactId, cv);
 			ops.add(insertOp.build());
 		} else if (newAddress != null && !newAddress.isEmpty() && !newAddress.equals(existingAddress)) {
-			l.d("Update address " + adressType + "(" + existingC.getFirstName() + " " + existingC.getLastName() + ")");
+			l.d("Update address " + adressType + "(" + existingC.getFirstName() + " " + existingC.getLastName() + "), " + newAddress);
 			ContentValues cv = new ContentValues();
 			cv.put(StructuredPostal.STREET, newAddress.getStreet());
 			cv.put(StructuredPostal.CITY, newAddress.getCity());
@@ -206,6 +248,34 @@ public class ContactMerger {
 			cv.put(StructuredPostal.REGION, newAddress.getState());
 			Builder updateOp = ContentProviderOperation.newUpdate(addCallerIsSyncAdapterFlag(Data.CONTENT_URI)).withSelection(selection,
 					new String[] { rawContactId + "", StructuredPostal.CONTENT_ITEM_TYPE, adressType + "" }).withValues(cv);
+			ops.add(updateOp.build());
+		}
+	}
+
+	public void updateOrganization(de.danielweisser.android.ldapsync.client.Organization newOrg, de.danielweisser.android.ldapsync.client.Organization existingOrg, int orgType) {
+		final String selection = Data.RAW_CONTACT_ID + "=? AND " + Data.MIMETYPE + "=? AND " + Organization.TYPE + "=?";
+		if ((newOrg == null || newOrg.isEmpty()) && existingOrg != null) {
+			l.d("Delete organization " + orgType + "(" + existingC.getFirstName() + " " + existingC.getLastName() + "), " + newOrg);
+			ops.add(ContentProviderOperation.newDelete(addCallerIsSyncAdapterFlag(Data.CONTENT_URI)).withSelection(selection,
+					new String[] { rawContactId + "", Organization.CONTENT_ITEM_TYPE, orgType + "" }).build());
+		} else if (existingOrg == null && newOrg != null && !newOrg.isEmpty()) {
+			l.d("Add organization " + orgType + "(" + existingC.getFirstName() + " " + existingC.getLastName() + "), " + newOrg);
+			ContentValues cv = new ContentValues();
+			cv.put(Organization.MIMETYPE, Organization.CONTENT_ITEM_TYPE);
+			cv.put(Organization.TYPE, orgType);
+			cv.put(Organization.COMPANY, newOrg.getCompany());
+			cv.put(Organization.TITLE, newOrg.getTitle());
+			cv.put(Organization.OFFICE_LOCATION, newOrg.getOfficeLocation());
+			Builder insertOp = createInsert(rawContactId, cv);
+			ops.add(insertOp.build());
+		} else if (newOrg != null && !newOrg.isEmpty() && !newOrg.equals(existingOrg)) {
+			l.d("Update organization " + orgType + "(" + existingC.getFirstName() + " " + existingC.getLastName() + "), " + newOrg);
+			ContentValues cv = new ContentValues();
+			cv.put(Organization.COMPANY, newOrg.getCompany());
+			cv.put(Organization.TITLE, newOrg.getTitle());
+			cv.put(Organization.OFFICE_LOCATION, newOrg.getOfficeLocation());
+			Builder updateOp = ContentProviderOperation.newUpdate(addCallerIsSyncAdapterFlag(Data.CONTENT_URI)).withSelection(selection,
+					new String[] { rawContactId + "", Organization.CONTENT_ITEM_TYPE, orgType + "" }).withValues(cv);
 			ops.add(updateOp.build());
 		}
 	}

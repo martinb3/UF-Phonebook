@@ -2,6 +2,7 @@ package de.danielweisser.android.ldapsync.client;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 
 import android.app.Notification;
@@ -9,8 +10,10 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.ContactsContract;
 import android.util.Log;
 
 import com.unboundid.ldap.sdk.LDAPConnection;
@@ -30,7 +33,7 @@ import de.danielweisser.android.ldapsync.syncadapter.SyncService;
  * @author <a href="mailto:daniel.weisser@gmx.de">Daniel Weisser</a>
  */
 public class LDAPUtilities {
-	
+
 	private static final String TAG = "LDAPUtilities";
 
 	/**
@@ -98,16 +101,52 @@ public class LDAPUtilities {
 	public static List<Contact> fetchContacts(final LDAPServerInstance ldapServer, final String baseDN, final String searchFilter, final Bundle mappingBundle,
 			final Date mLastUpdated, final Context context) {
 		final ArrayList<Contact> friendList = new ArrayList<Contact>();
+
+		final HashSet<String> DNs = new HashSet<String>();
 		LDAPConnection connection = null;
 		try {
 			connection = ldapServer.getConnection();
-			SearchResult searchResult = connection.search(baseDN, SearchScope.SUB, searchFilter, getUsedAttributes(mappingBundle));
-			Log.i(TAG, searchResult.getEntryCount() + " entries returned.");
 
-			for (SearchResultEntry e : searchResult.getSearchEntries()) {
-				Contact u = Contact.valueOf(e, mappingBundle);
-				if (u != null) {
-					friendList.add(u);
+			Cursor c1 = context.getContentResolver().query(ContactsContract.CommonDataKinds.Email.CONTENT_URI, 
+					new String[] {
+					ContactsContract.CommonDataKinds.Email.DATA1,
+					ContactsContract.CommonDataKinds.Email.DATA2
+			}, 
+			null, null, null);
+
+			while (c1.moveToNext()) {
+				String DATA1 = c1.getString(0);
+				int DATA2 = c1.getInt(1);
+
+				String emailFilter = "(&(mail="+DATA1+")"+searchFilter+")";
+				SearchResult searchResult = connection.search(baseDN, SearchScope.SUB, emailFilter, getUsedAttributes(mappingBundle));
+				List<SearchResultEntry> results = searchResult.getSearchEntries();
+				Log.i(TAG, "Found " + results.size() + " results for this contact (filter was "+emailFilter+")");
+				if(results.size() == 1) {
+					SearchResultEntry e = results.get(0);
+					DNs.add(e.getDN());
+					Log.i(TAG, "Found in directory: " + DATA1 + " (type=" + DATA2 + ", dn="+e.getDN()+")");
+				}
+				else {
+					Log.i(TAG, "Not found in directory: " + DATA1 + " (type=" + DATA2 + ")");
+				}
+			}
+			c1.close();
+
+
+
+			Log.i(TAG, "Searching for " + DNs.size() + " DNs in the directory");
+			for(String dn : DNs) { 
+
+				Log.i(TAG, "DN search base string: " + dn);
+				SearchResult searchResult = connection.search(dn, SearchScope.BASE, searchFilter, getUsedAttributes(mappingBundle));
+				Log.i(TAG, searchResult.getEntryCount() + " entries returned for this DN.");
+
+				for (SearchResultEntry e : searchResult.getSearchEntries()) {
+					Contact u = Contact.valueOf(e, mappingBundle);
+					if (u != null) {
+						friendList.add(u);
+					}
 				}
 			}
 		} catch (LDAPException e) {

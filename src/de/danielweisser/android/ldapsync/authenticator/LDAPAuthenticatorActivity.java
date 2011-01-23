@@ -99,6 +99,8 @@ public class LDAPAuthenticatorActivity extends AccountAuthenticatorActivity {
 	private EditText mEmailEdit;
 	private String mStreet;
 	private EditText mStreetEdit;
+	private String mOfficeLocation;
+	private EditText mOfficeLocationEdit;
 	private String mCity;
 	private EditText mCityEdit;
 	private String mState;
@@ -109,6 +111,14 @@ public class LDAPAuthenticatorActivity extends AccountAuthenticatorActivity {
 	private EditText mCountryEdit;
 	private String mImage;
 	private EditText mImageEdit;
+
+	private String mTitle;
+	private EditText mTitleEdit;
+
+	private String mCompany;
+	private EditText mCompanyEdit;
+
+	
 	private Dialog dialog;
 
 	@Override
@@ -154,6 +164,7 @@ public class LDAPAuthenticatorActivity extends AccountAuthenticatorActivity {
 		mHostEdit.setText(mHost);
 		mPortEdit.setText(Integer.toString(mPort));
 		mSearchFilterEdit.setText(mSearchFilter);
+		mBaseDNSpinner.setText(mBaseDN);
 
 		// Set values for LDAP mapping
 		mFirstNameEdit = (EditText) findViewById(R.id.firstname_edit);
@@ -180,6 +191,15 @@ public class LDAPAuthenticatorActivity extends AccountAuthenticatorActivity {
 		mStateEdit.setText(mState);
 		mCountryEdit = (EditText) findViewById(R.id.country_edit);
 		mCountryEdit.setText(mCountry);
+		
+		mOfficeLocationEdit = (EditText) findViewById(R.id.officelocation_edit);
+		mOfficeLocationEdit.setText(mOfficeLocation);
+
+		mCompanyEdit = (EditText) findViewById(R.id.company_edit);
+		mCompanyEdit.setText(mCompany);
+		
+		mTitleEdit = (EditText) findViewById(R.id.title_edit);
+		mTitleEdit.setText(mTitle);
 	}
 
 	/**
@@ -188,7 +208,9 @@ public class LDAPAuthenticatorActivity extends AccountAuthenticatorActivity {
 	private void setLDAPMappings() {
 		if (mRequestNewAccount) {
 			// mSearchFilter = "(objectClass=inetOrgPerson)";
-			mSearchFilter = "(objectClass=organizationalPerson)";
+			mHost = "ldap.ufl.edu";
+			mBaseDN = "dc=ufl,dc=edu";
+			mSearchFilter = "(objectClass=person)";
 			mFirstName = "givenName";
 			mLastName = "sn";
 			mOfficePhone = "telephonenumber";
@@ -201,6 +223,9 @@ public class LDAPAuthenticatorActivity extends AccountAuthenticatorActivity {
 			mZip = "postalCode";
 			mState = "st";
 			mCountry = "co";
+			mOfficeLocation = "uflEduOfficeLocation";
+			mCompany = "o";
+			mTitle = "title";
 			// mImage = "thumbnailphoto";
 		}
 	}
@@ -266,6 +291,9 @@ public class LDAPAuthenticatorActivity extends AccountAuthenticatorActivity {
 			userData.putString(PARAM_MAPPING + Contact.ZIP, mZip);
 			userData.putString(PARAM_MAPPING + Contact.STATE, mState);
 			userData.putString(PARAM_MAPPING + Contact.COUNTRY, mCountry);
+			userData.putString(PARAM_MAPPING + Contact.OFFICELOCATION, mOfficeLocation);
+			userData.putString(PARAM_MAPPING + Contact.COMPANY, mCompany);
+			userData.putString(PARAM_MAPPING + Contact.TITLE, mTitle);
 			mAccountManager.addAccountExplicitly(account, mPassword, userData);
 
 			// Set contacts sync for this account.
