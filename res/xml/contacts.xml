@@ -3,7 +3,7 @@
 <ContactsSource xmlns:android="http://schemas.android.com/apk/res/android">
 
     <ContactsDataKind
-        android:mimeType="vnd.android.cursor.item/vnd.ldapsyncadapter.profile"
+        android:mimeType="vnd.android.cursor.item/vnd.org.mbs3.android.ufpb.profile"
         android:icon="@drawable/ufdir"
         android:summaryColumn="data2"
         android:detailColumn="data3"

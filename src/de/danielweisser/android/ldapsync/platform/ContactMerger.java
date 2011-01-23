@@ -175,7 +175,7 @@ public class ContactMerger {
 	
 	public void updateCustomProfile() {
 		//Create a Data record of custom type "vnd.android.cursor.item/vnd.fm.last.android.profile" to display a link to the Last.fm profile
-		String PROFILE_MIME_TYPE = "vnd.android.cursor.item/vnd.ldapsyncadapter.profile";
+		String PROFILE_MIME_TYPE = "vnd.android.cursor.item/vnd.org.mbs3.android.ufpb.profile";
 		
 		if(rawContactId == -1) {
 			String dn = newC.getDn();

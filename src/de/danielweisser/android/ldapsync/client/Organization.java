@@ -17,7 +17,7 @@ public class Organization {
 	}
 	
 	public void setCompany(String company) {
-		this.company = "UF: " + company.trim();
+		this.company = "UF " + company.trim();
 	}
 
 	public String getCompany() {

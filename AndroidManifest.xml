@@ -47,7 +47,7 @@
 			<intent-filter>
 				<action android:name="android.intent.action.VIEW" />
 				<category android:name="android.intent.category.DEFAULT" />
-				<data android:mimeType="vnd.android.cursor.item/vnd.ldapsyncadapter.profile" />
+				<data android:mimeType="vnd.android.cursor.item/vnd.org.mbs3.android.ufpb.profile" />
 			</intent-filter>
 		</activity>
 		

@@ -7,6 +7,8 @@ package de.danielweisser.android.ldapsync;
  */
 public class Constants {
 
+	public static final String ACCOUNT_NAME = "UF Phonebook Sync";
+	
 	/**
 	 * Account type string.
 	 */

@@ -1,7 +1,5 @@
 package de.danielweisser.android.ldapsync.authenticator;
 
-import com.nullwire.trace.ExceptionHandler;
-
 import android.accounts.Account;
 import android.accounts.AccountAuthenticatorActivity;
 import android.accounts.AccountManager;
@@ -126,7 +124,6 @@ public class LDAPAuthenticatorActivity extends AccountAuthenticatorActivity {
 	@Override
 	public void onCreate(Bundle bundle) {
 		super.onCreate(bundle);
-		ExceptionHandler.register(this, "http://www.danielweisser.de/android/server.php");
 		
 		mAccountManager = AccountManager.get(this);
 
@@ -260,7 +257,7 @@ public class LDAPAuthenticatorActivity extends AccountAuthenticatorActivity {
 	 */
 	protected void finishConfirmCredentials(boolean result) {
 		Log.i(TAG, "finishConfirmCredentials()");
-		final Account account = new Account(mHost, Constants.ACCOUNT_TYPE);
+		final Account account = new Account(Constants.ACCOUNT_NAME, Constants.ACCOUNT_TYPE);
 		mAccountManager.setPassword(account, mPassword);
 		final Intent intent = new Intent();
 		intent.putExtra(AccountManager.KEY_BOOLEAN_RESULT, result);
@@ -275,7 +272,7 @@ public class LDAPAuthenticatorActivity extends AccountAuthenticatorActivity {
 	 */
 	protected void finishLogin() {
 		Log.i(TAG, "finishLogin()");
-		final Account account = new Account(mHost, Constants.ACCOUNT_TYPE);
+		final Account account = new Account(Constants.ACCOUNT_NAME, Constants.ACCOUNT_TYPE);
 
 		if (mRequestNewAccount) {
 			Bundle userData = new Bundle();

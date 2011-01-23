@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<string name="label">LDAP</string>
-	<string name="app_name">LDAP Sync</string>
+	<string name="label">UF Phonebook Sync</string>
+	<string name="app_name">UF Phonebook</string>
 
 	<!-- AuthenticatorActivity -->
 	<skip />
@@ -37,8 +37,7 @@
 
 
 	<!-- Message shown in dialog if the username or password is invalid. -->
-	<string name="login_activity_loginfail">The username or password isn\'t valid. A LDAP
-		account is required. Please try again. </string>
+	<string name="login_activity_loginfail">The username or password isn\'t valid. An LDAP account is not required, but if you provide one, it must be valid. Please try again. </string>
 	<!--
 		Message shown in progress dialog while app connects to the server
 	-->
