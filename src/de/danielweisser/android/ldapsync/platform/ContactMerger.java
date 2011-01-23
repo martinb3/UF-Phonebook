@@ -173,11 +173,12 @@ public class ContactMerger {
 		}
 	}
 	
-	public void updateCustomProfile(String dn) {
+	public void updateCustomProfile() {
 		//Create a Data record of custom type "vnd.android.cursor.item/vnd.fm.last.android.profile" to display a link to the Last.fm profile
 		String PROFILE_MIME_TYPE = "vnd.android.cursor.item/vnd.ldapsyncadapter.profile";
 		
 		if(rawContactId == -1) {
+			String dn = newC.getDn();
 			l.d("Create new profile item for " + newC);
 			ContentValues cv = new ContentValues();
 			
@@ -185,12 +186,15 @@ public class ContactMerger {
 			cv.put(ContactsContract.Data.MIMETYPE, PROFILE_MIME_TYPE);
 			cv.put(ContactsContract.Data.DATA1, dn);
 			cv.put(ContactsContract.Data.DATA2, "UF Directory");
-			cv.put(ContactsContract.Data.DATA3, "Click to view");
+			cv.put(ContactsContract.Data.DATA3, "Click to view1");
+			cv.put(ContactsContract.Data.DATA4, newC.getUfid());
 			
 			Builder insertOp = createInsert(rawContactId, cv);
 			ops.add(insertOp.build());
 		} else {
 			String selection = Data.RAW_CONTACT_ID + "=? AND " + ContactsContract.Data.MIMETYPE + "=?";
+			
+			String dn = existingC.getDn();
 			l.d("Delete existing profile for " + dn);
 			
 			ContentValues cv = new ContentValues();
@@ -198,7 +202,8 @@ public class ContactMerger {
 			// after, to update
 			cv.put(ContactsContract.Data.DATA1, dn);
 			cv.put(ContactsContract.Data.DATA2, "UF Directory");
-			cv.put(ContactsContract.Data.DATA3, "Click to view");
+			cv.put(ContactsContract.Data.DATA3, "Click to view2");
+			cv.put(ContactsContract.Data.DATA4, newC.getUfid());
 			
 			ops.add(ContentProviderOperation.newUpdate(addCallerIsSyncAdapterFlag(Data.CONTENT_URI)).withSelection(selection,
 				new String[] { rawContactId + "",  PROFILE_MIME_TYPE})

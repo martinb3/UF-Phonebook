@@ -118,6 +118,8 @@ public class LDAPAuthenticatorActivity extends AccountAuthenticatorActivity {
 	private String mCompany;
 	private EditText mCompanyEdit;
 
+	private String mUfid;
+	private EditText mUfidEdit;
 	
 	private Dialog dialog;
 
@@ -200,6 +202,10 @@ public class LDAPAuthenticatorActivity extends AccountAuthenticatorActivity {
 		
 		mTitleEdit = (EditText) findViewById(R.id.title_edit);
 		mTitleEdit.setText(mTitle);
+		
+		mUfidEdit = (EditText) findViewById(R.id.ufid_edit);
+		mUfidEdit.setText(mUfid);
+
 	}
 
 	/**
@@ -226,6 +232,7 @@ public class LDAPAuthenticatorActivity extends AccountAuthenticatorActivity {
 			mOfficeLocation = "uflEduOfficeLocation";
 			mCompany = "o";
 			mTitle = "title";
+			mUfid = "uflEduUniversityId";
 			// mImage = "thumbnailphoto";
 		}
 	}
@@ -294,6 +301,7 @@ public class LDAPAuthenticatorActivity extends AccountAuthenticatorActivity {
 			userData.putString(PARAM_MAPPING + Contact.OFFICELOCATION, mOfficeLocation);
 			userData.putString(PARAM_MAPPING + Contact.COMPANY, mCompany);
 			userData.putString(PARAM_MAPPING + Contact.TITLE, mTitle);
+			userData.putString(PARAM_MAPPING + Contact.UFID, mUfid);
 			mAccountManager.addAccountExplicitly(account, mPassword, userData);
 
 			// Set contacts sync for this account.
@@ -391,6 +399,12 @@ public class LDAPAuthenticatorActivity extends AccountAuthenticatorActivity {
 		mZip = mZipEdit.getText().toString();
 		mState = mStateEdit.getText().toString();
 		mCountry = mCountryEdit.getText().toString();
+		
+		mCompany = mCompanyEdit.getText().toString();
+		mTitle = mTitleEdit.getText().toString();
+		mOfficeLocation = mOfficeLocationEdit.getText().toString();
+		
+		mUfid = mUfidEdit.getText().toString();
 
 		if (!mConfirmCredentials) {
 			finishLogin();

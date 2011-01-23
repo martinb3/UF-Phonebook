@@ -152,7 +152,7 @@ public class ContactManager {
 				}
 			}
 
-			prepareFields(rawContactId, contact, existingContact, ops, false, contact.getDn());
+			prepareFields(rawContactId, contact, existingContact, ops, false);
 
 			if (ops.size() > 0) {
 				resolver.applyBatch(ContactsContract.AUTHORITY, ops);
@@ -220,14 +220,14 @@ public class ContactManager {
 		cv.put(RawContacts.ACCOUNT_TYPE, Constants.ACCOUNT_TYPE);
 		cv.put(RawContacts.ACCOUNT_NAME, accountName);
 		cv.put(RawContacts.SOURCE_ID, contact.getDn());
-		cv.put(RawContacts.SYNC1, contact.getDn());
+		cv.put(RawContacts.SYNC1, contact.getUfid());
 
 		// This is the first insert into the raw contacts table
 		Builder builder = ContentProviderOperation.newInsert(uri).withValues(cv);
 		ContentProviderOperation i1 = builder.build();
 		ops.add(i1);
 
-		prepareFields(-1, contact, new Contact(), ops, true, contact.getDn());
+		prepareFields(-1, contact, new Contact(), ops, true);
 
 		// Now create the contact with a single batch operation
 		try {
@@ -240,7 +240,7 @@ public class ContactManager {
 		}
 	}
 
-	private void prepareFields(long rawContactId, Contact newC, Contact existingC, ArrayList<ContentProviderOperation> ops, boolean isNew, String dn) {
+	private void prepareFields(long rawContactId, Contact newC, Contact existingC, ArrayList<ContentProviderOperation> ops, boolean isNew) {
 		ContactMerger contactMerger = new ContactMerger(rawContactId, newC, existingC, ops, l);
 		contactMerger.updateName();
 		contactMerger.updateMail(Email.TYPE_WORK);
@@ -254,7 +254,7 @@ public class ContactManager {
 		contactMerger.updateOrganization(Organization.TYPE_WORK);
 
 		contactMerger.updatePicture();
-		contactMerger.updateCustomProfile(dn);
+		contactMerger.updateCustomProfile();
 	}
 
 	public static void makeGroupVisible(String accountName, ContentResolver resolver) {

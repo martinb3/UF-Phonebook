@@ -4,6 +4,7 @@ import android.accounts.AbstractAccountAuthenticator;
 import android.accounts.Account;
 import android.accounts.AccountAuthenticatorResponse;
 import android.accounts.AccountManager;
+import android.accounts.NetworkErrorException;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -31,6 +32,20 @@ class LDAPAuthenticator extends AbstractAccountAuthenticator {
 	@Override
 	public Bundle addAccount(AccountAuthenticatorResponse response, String accountType, String authTokenType, String[] requiredFeatures, Bundle options) {
 		Log.i(TAG, "addAccount()");
+		AccountManager am = AccountManager.get(mContext);
+		Account[] accounts = am.getAccountsByType(accountType);
+		if(accounts.length > 0) {
+			String err = "You may only have one account of this type";
+			int errCode = AccountManager.ERROR_CODE_UNSUPPORTED_OPERATION;
+			Log.w(TAG, err);
+
+			// too bad this doesn't show the user an error or message of any kind
+			final Bundle errBundle = new Bundle();
+			errBundle.putInt(AccountManager.KEY_ERROR_CODE, errCode);
+			errBundle.putString(AccountManager.KEY_ERROR_MESSAGE, err);
+			return errBundle;
+		}
+		
 		final Intent intent = new Intent(mContext, LDAPAuthenticatorActivity.class);
 		intent.putExtra(LDAPAuthenticatorActivity.PARAM_AUTHTOKEN_TYPE, authTokenType);
 		intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response);

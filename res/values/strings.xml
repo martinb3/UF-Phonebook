@@ -14,6 +14,7 @@
 	<string name="login_activity_basedn_label">BaseDN</string>
 	<string name="login_activity_searchfilter_label">Search Filter</string>
 	<string name="login_activity_ldap_mappings_label">LDAP Mappings</string>
+	<string name="login_activity_ufid_label">UFID</string>
 	<string name="login_activity_firstname_label">First Name</string>
 	<string name="login_activity_lastname_label">Last Name</string>
 	<string name="login_activity_officephone_label">Office Phone</string>

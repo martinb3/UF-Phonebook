@@ -32,6 +32,7 @@ public class Contact {
 	public static String STATE = "STATE";
 	public static String ZIP = "ZIP";
 	public static String COUNTRY = "COUNTRY";
+	public static String UFID = "uflEduUniversityId";
 	
 	public static String OFFICELOCATION = "UFLEDUOFFICELOCATION";
 	public static String COMPANY = "O";
@@ -45,6 +46,16 @@ public class Contact {
 	private String homePhone = "";
 	private String[] emails = null;
 	
+	private String ufid = "";
+	
+	public String getUfid() {
+		return ufid;
+	}
+
+	public void setUfid(String ufid) {
+		this.ufid = ufid;
+	}
+
 	private byte[] image = null;
 	private Address waddress = null;
 	private Organization worg = null;
@@ -153,6 +164,8 @@ public class Contact {
 			c.setCellWorkPhone(user.hasAttribute(mB.getString(MOBILE)) ? user.getAttributeValue(mB.getString(MOBILE)) : null);
 			c.setHomePhone(user.hasAttribute(mB.getString(HOMEPHONE)) ? user.getAttributeValue(mB.getString(HOMEPHONE)) : null);
 			c.setEmails(user.hasAttribute(mB.getString(MAIL)) ? user.getAttributeValues(mB.getString(MAIL)) : null);
+			
+			c.setUfid(user.hasAttribute(mB.getString(UFID)) ? user.getAttributeValue(mB.getString(UFID)) : null);
 			
 			byte[] image = null;
 			if (user.hasAttribute(mB.getString(PHOTO))) {
