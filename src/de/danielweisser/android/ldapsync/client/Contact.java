@@ -20,6 +20,7 @@ import com.unboundid.ldap.sdk.ReadOnlyEntry;
  * 
  */
 public class Contact {
+	public static String DISPLAYNAME = "DISPLAYNAME";
 	public static String FIRSTNAME = "FIRSTNAME";
 	public static String LASTNAME = "LASTNAME";
 	public static String TELEPHONE = "TELEPHONE";
@@ -39,6 +40,7 @@ public class Contact {
 	public static String TITLE = "TITLE";
 	
 	private String dn = "";
+	private String displayName = "";
 	private String firstName = "";
 	private String lastName = "";
 	private String cellWorkPhone = "";
@@ -60,6 +62,14 @@ public class Contact {
 	private Address waddress = null;
 	private Organization worg = null;
 	
+
+	public String getDisplayName() {
+		return displayName;
+	}
+
+	public void setDisplayName(String displayName) {
+		this.displayName = displayName;
+	}
 
 	public String getDn() {
 		return dn;
@@ -154,6 +164,7 @@ public class Contact {
 		Contact c = new Contact();
 		try {
 			c.setDn(user.getDN());
+			c.setDisplayName(user.hasAttribute(mB.getString(DISPLAYNAME)) ? user.getAttributeValue(mB.getString(DISPLAYNAME)) : null);
 			c.setFirstName(user.hasAttribute(mB.getString(FIRSTNAME)) ? user.getAttributeValue(mB.getString(FIRSTNAME)) : null);
 			c.setLastName(user.hasAttribute(mB.getString(LASTNAME)) ? user.getAttributeValue(mB.getString(LASTNAME)) : null);
 			if ((user.hasAttribute(mB.getString(FIRSTNAME)) ? user.getAttributeValue(mB.getString(FIRSTNAME)) : null) == null
@@ -231,5 +242,10 @@ public class Contact {
 			}
 		}
 		return c;
+	}
+
+	@Override
+	public String toString() {
+		return "Contact [displayName=" + displayName + ", dn=" + dn + "]";
 	}
 }

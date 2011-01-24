@@ -37,13 +37,16 @@
 		</service>
 		<activity
 			android:name="de.danielweisser.android.ldapsync.authenticator.LDAPAuthenticatorActivity"
-			android:label="@string/ui_activity_title" android:excludeFromRecents="true">
+			android:label="@string/ui_activity_title"
+			android:excludeFromRecents="true">
 			<!--
 				No intent-filter here! This activity is only ever launched by
 				someone who explicitly knows the class name
 			-->
 		</activity>
-		<activity android:name=".activity.Profile" android:label="@string/profile_label">
+		<activity android:name=".activity.Profile" android:label="@string/profile_label"
+			android:theme="@android:style/Theme.NoTitleBar"
+			>
 			<intent-filter>
 				<action android:name="android.intent.action.VIEW" />
 				<category android:name="android.intent.category.DEFAULT" />

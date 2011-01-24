@@ -17,6 +17,7 @@ import android.provider.ContactsContract.CommonDataKinds.Photo;
 import android.provider.ContactsContract.CommonDataKinds.StructuredName;
 import android.provider.ContactsContract.CommonDataKinds.StructuredPostal;
 import android.text.TextUtils;
+import android.util.Log;
 import de.danielweisser.android.ldapsync.client.Contact;
 import de.danielweisser.android.ldapsync.syncadapter.Logger;
 
@@ -32,6 +33,7 @@ public class ContactMerger {
 	private final Contact existingC;
 	private final ArrayList<ContentProviderOperation> ops;
 	private final Logger l;
+	private String TAG = "ContactMerger";
 
 	public ContactMerger(long rawContactId, Contact newContact, Contact existingContact, ArrayList<ContentProviderOperation> ops, Logger l) {
 		this.rawContactId = rawContactId;
@@ -42,19 +44,23 @@ public class ContactMerger {
 	}
 
 	public void updateName() {
-		if (TextUtils.isEmpty(existingC.getFirstName()) || TextUtils.isEmpty(existingC.getLastName())) {
-			l.d("Set name to: " + newC.getFirstName() + " " + newC.getLastName());
+		if (TextUtils.isEmpty(existingC.getFirstName()) || TextUtils.isEmpty(existingC.getLastName()) || TextUtils.isEmpty(existingC.getDisplayName())) {
+			l.d("Set name to: " + newC.getFirstName() + " " + newC.getLastName() + " - " + newC.getDisplayName());
+			Log.d(TAG,"Set name to: " + newC.getFirstName() + " " + newC.getLastName() + " - " + newC.getDisplayName());
 			ContentValues cv = new ContentValues();
 			cv.put(StructuredName.GIVEN_NAME, newC.getFirstName());
 			cv.put(StructuredName.FAMILY_NAME, newC.getLastName());
+			cv.put(StructuredName.DISPLAY_NAME, newC.getDisplayName());
 			cv.put(StructuredName.MIMETYPE, StructuredName.CONTENT_ITEM_TYPE);
 			Builder insertOp = createInsert(rawContactId, cv);
 			ops.add(insertOp.build());
-		} else if (!newC.getFirstName().equals(existingC.getFirstName()) || !newC.getLastName().equals(existingC.getLastName())) {
-			l.d("Update name to: " + newC.getFirstName() + " " + newC.getLastName());
+		} else if (!newC.getFirstName().equals(existingC.getFirstName()) || !newC.getLastName().equals(existingC.getLastName()) || !newC.getDisplayName().equals(existingC.getDisplayName())) {
+			l.d("Update name to: " + newC.getFirstName() + " " + newC.getLastName()+ " - " + newC.getDisplayName());
+			Log.d(TAG,"Update name to: " + newC.getFirstName() + " " + newC.getLastName()+ " - " + newC.getDisplayName());
 			ContentValues cv = new ContentValues();
 			cv.put(StructuredName.GIVEN_NAME, newC.getFirstName());
 			cv.put(StructuredName.FAMILY_NAME, newC.getLastName());
+			cv.put(StructuredName.DISPLAY_NAME, newC.getDisplayName());
 			Builder updateOp = ContentProviderOperation.newUpdate(addCallerIsSyncAdapterFlag(Data.CONTENT_URI)).withSelection(
 					Data.RAW_CONTACT_ID + "=? AND " + Data.MIMETYPE + "=?", new String[] { rawContactId + "", StructuredName.CONTENT_ITEM_TYPE })
 					.withValues(cv);
@@ -180,13 +186,14 @@ public class ContactMerger {
 		if(rawContactId == -1) {
 			String dn = newC.getDn();
 			l.d("Create new profile item for " + newC);
+			Log.d(TAG , "Create new profile item for " + newC);
 			ContentValues cv = new ContentValues();
 			
 			// first insert / create
 			cv.put(ContactsContract.Data.MIMETYPE, PROFILE_MIME_TYPE);
 			cv.put(ContactsContract.Data.DATA1, dn);
-			cv.put(ContactsContract.Data.DATA2, "UF Directory");
-			cv.put(ContactsContract.Data.DATA3, "Click to view");
+			cv.put(ContactsContract.Data.DATA2, "UF Phonebook");
+			cv.put(ContactsContract.Data.DATA3, "Click to view entry");
 			cv.put(ContactsContract.Data.DATA4, newC.getUfid());
 			
 			Builder insertOp = createInsert(rawContactId, cv);
@@ -194,15 +201,16 @@ public class ContactMerger {
 		} else {
 			String selection = Data.RAW_CONTACT_ID + "=? AND " + ContactsContract.Data.MIMETYPE + "=?";
 			
-			String dn = existingC.getDn();
+			String dn = newC.getDn();
 			l.d("Delete existing profile for " + dn);
+			Log.d(TAG,"Delete existing profile for " + dn);
 			
 			ContentValues cv = new ContentValues();
 			
 			// after, to update
 			cv.put(ContactsContract.Data.DATA1, dn);
-			cv.put(ContactsContract.Data.DATA2, "UF Directory");
-			cv.put(ContactsContract.Data.DATA3, "Click to view");
+			cv.put(ContactsContract.Data.DATA2, "UF Phonebook");
+			cv.put(ContactsContract.Data.DATA3, "Click to view entry");
 			cv.put(ContactsContract.Data.DATA4, newC.getUfid());
 			
 			ops.add(ContentProviderOperation.newUpdate(addCallerIsSyncAdapterFlag(Data.CONTENT_URI)).withSelection(selection,

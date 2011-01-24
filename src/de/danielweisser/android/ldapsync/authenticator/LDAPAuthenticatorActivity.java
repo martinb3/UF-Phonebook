@@ -83,8 +83,13 @@ public class LDAPAuthenticatorActivity extends AccountAuthenticatorActivity {
 	private int mPort;
 	private EditText mPortEdit;
 
+	private String mDisplayName;
+	private EditText mDisplayNameEdit;
+
+	
 	private String mFirstName;
 	private EditText mFirstNameEdit;
+	
 	private String mLastName;
 	private EditText mLastNameEdit;
 	private String mCellPhone;
@@ -166,6 +171,8 @@ public class LDAPAuthenticatorActivity extends AccountAuthenticatorActivity {
 		mBaseDNSpinner.setText(mBaseDN);
 
 		// Set values for LDAP mapping
+		mDisplayNameEdit = (EditText) findViewById(R.id.displayname_edit);
+		mDisplayNameEdit.setText(mDisplayName);
 		mFirstNameEdit = (EditText) findViewById(R.id.firstname_edit);
 		mFirstNameEdit.setText(mFirstName);
 		mLastNameEdit = (EditText) findViewById(R.id.lastname_edit);
@@ -214,6 +221,7 @@ public class LDAPAuthenticatorActivity extends AccountAuthenticatorActivity {
 			mHost = "ldap.ufl.edu";
 			mBaseDN = "dc=ufl,dc=edu";
 			mSearchFilter = "(objectClass=person)";
+			mDisplayName = "displayName";
 			mFirstName = "givenName";
 			mLastName = "sn";
 			mOfficePhone = "telephonenumber";
@@ -283,6 +291,7 @@ public class LDAPAuthenticatorActivity extends AccountAuthenticatorActivity {
 			userData.putString(PARAM_SEARCHFILTER, mSearchFilter);
 			userData.putString(PARAM_BASEDN, mBaseDN);
 			// Mappings for LDAP data
+			userData.putString(PARAM_MAPPING + Contact.DISPLAYNAME, mDisplayName);
 			userData.putString(PARAM_MAPPING + Contact.FIRSTNAME, mFirstName);
 			userData.putString(PARAM_MAPPING + Contact.LASTNAME, mLastName);
 			userData.putString(PARAM_MAPPING + Contact.TELEPHONE, mOfficePhone);
@@ -384,6 +393,7 @@ public class LDAPAuthenticatorActivity extends AccountAuthenticatorActivity {
 	public void saveAccount(View view) {
 		mSearchFilter = mSearchFilterEdit.getText().toString();
 		mBaseDN = mBaseDNSpinner.getText().toString();
+		mDisplayName = mDisplayNameEdit.getText().toString();
 		mFirstName = mFirstNameEdit.getText().toString();
 		mLastName = mLastNameEdit.getText().toString();
 		mOfficePhone = mOfficePhoneEdit.getText().toString();

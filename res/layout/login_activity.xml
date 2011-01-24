@@ -105,6 +105,16 @@
 							android:capitalize="none" android:autoText="false"
 							android:minWidth="300dip" android:id="@+id/ufid_edit"
 							android:inputType="text" />
+
+						<TextView android:textAppearance="?android:attr/textAppearanceSmall"
+							android:textStyle="bold" android:layout_width="wrap_content"
+							android:layout_height="wrap_content" android:text="@string/login_activity_displayname_label" />
+						<EditText android:singleLine="true" android:layout_width="fill_parent"
+							android:layout_height="wrap_content" android:scrollHorizontally="true"
+							android:capitalize="none" android:autoText="false"
+							android:minWidth="300dip" android:id="@+id/displayname_edit"
+							android:inputType="text" />
+
 							
 						<TextView android:textAppearance="?android:attr/textAppearanceSmall"
 							android:textStyle="bold" android:layout_width="wrap_content"
@@ -114,6 +124,7 @@
 							android:capitalize="none" android:autoText="false"
 							android:minWidth="300dip" android:id="@+id/firstname_edit"
 							android:inputType="text" />
+							
 						<TextView android:textAppearance="?android:attr/textAppearanceSmall"
 							android:textStyle="bold" android:layout_width="wrap_content"
 							android:layout_height="wrap_content" android:text="@string/login_activity_lastname_label" />
