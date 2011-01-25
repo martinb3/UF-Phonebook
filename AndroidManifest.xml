@@ -17,7 +17,7 @@
 	
 	<application android:icon="@drawable/icon" android:label="@string/app_name" android:debuggable="false">
 		<service
-			android:name=".authenticator.LDAPAuthenticationService"
+			android:name="org.mbs3.android.ufpb.authenticator.LDAPAuthenticationService"
 			android:exported="true">
 			<intent-filter>
 				<action android:name="android.accounts.AccountAuthenticator" />
@@ -25,7 +25,7 @@
 			<meta-data android:name="android.accounts.AccountAuthenticator"
 				android:resource="@xml/authenticator" />
 		</service>
-		<service android:name=".syncadapter.SyncService"
+		<service android:name="org.mbs3.android.ufpb.syncadapter.SyncService"
 			android:exported="true">
 			<intent-filter>
 				<action android:name="android.content.SyncAdapter" />
@@ -36,7 +36,7 @@
    			    android:resource="@xml/contacts" />
 		</service>
 		<activity
-			android:name=".authenticator.LDAPAuthenticatorActivity"
+			android:name="org.mbs3.android.ufpb.authenticator.LDAPAuthenticatorActivity"
 			android:label="@string/ui_activity_title"
 			android:excludeFromRecents="true">
 			<!--
@@ -44,7 +44,7 @@
 				someone who explicitly knows the class name
 			-->
 		</activity>
-		<activity android:name=".activity.Profile" android:label="@string/profile_label"
+		<activity android:name="org.mbs3.android.ufpb.activity.Profile" android:label="@string/profile_label"
 			android:theme="@android:style/Theme.NoTitleBar"
 			>
 			<intent-filter>

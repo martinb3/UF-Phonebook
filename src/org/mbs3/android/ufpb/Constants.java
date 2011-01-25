@@ -22,6 +22,6 @@ public class Constants {
 	/**
 	 * SD card LDAPSync folder.
 	 */
-	public static final String SDCARD_FOLDER = "/LDAPSync";
+	public static final String SDCARD_FOLDER = "/UFPhonebookSync";
 
 }
