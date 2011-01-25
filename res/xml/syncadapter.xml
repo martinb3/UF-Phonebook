@@ -5,6 +5,6 @@
 
 <sync-adapter xmlns:android="http://schemas.android.com/apk/res/android"
     android:contentAuthority="com.android.contacts"
-    android:accountType="de.danielweisser.android.ldapsync"
+    android:accountType="org.mbs3.android.ufpb"
     android:supportsUploading="false"
 />

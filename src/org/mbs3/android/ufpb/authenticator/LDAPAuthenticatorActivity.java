@@ -1,6 +1,11 @@
-package de.danielweisser.android.ldapsync.authenticator;
+package org.mbs3.android.ufpb.authenticator;
 
+import org.mbs3.android.ufpb.Constants;
 import org.mbs3.android.ufpb.R;
+import org.mbs3.android.ufpb.client.Contact;
+import org.mbs3.android.ufpb.client.LDAPServerInstance;
+import org.mbs3.android.ufpb.client.LDAPUtilities;
+import org.mbs3.android.ufpb.platform.ContactManager;
 
 import android.accounts.Account;
 import android.accounts.AccountAuthenticatorActivity;
@@ -23,11 +28,6 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.ViewFlipper;
 import android.widget.AdapterView.OnItemSelectedListener;
-import de.danielweisser.android.ldapsync.Constants;
-import de.danielweisser.android.ldapsync.client.Contact;
-import de.danielweisser.android.ldapsync.client.LDAPServerInstance;
-import de.danielweisser.android.ldapsync.client.LDAPUtilities;
-import de.danielweisser.android.ldapsync.platform.ContactManager;
 
 /**
  * Activity which displays login screen to the user.

@@ -1,4 +1,8 @@
-package de.danielweisser.android.ldapsync.authenticator;
+package org.mbs3.android.ufpb.authenticator;
+
+import org.mbs3.android.ufpb.Constants;
+import org.mbs3.android.ufpb.client.LDAPServerInstance;
+import org.mbs3.android.ufpb.client.LDAPUtilities;
 
 import android.accounts.AbstractAccountAuthenticator;
 import android.accounts.Account;
@@ -8,12 +12,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import de.danielweisser.android.ldapsync.Constants;
-import de.danielweisser.android.ldapsync.client.LDAPServerInstance;
-import de.danielweisser.android.ldapsync.client.LDAPUtilities;
 
 /**
- * This class is an implementation of AbstractAccountAuthenticator for authenticating accounts in the de.danielweisser.android.ldapsync domain.
+ * This class is an implementation of AbstractAccountAuthenticator for authenticating accounts in the org.mbs3.android.ufpb domain.
  * 
  * @author <a href="mailto:daniel.weisser@gmx.de">Daniel Weisser</a>
  */

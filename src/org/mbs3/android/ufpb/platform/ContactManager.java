@@ -1,9 +1,14 @@
-package de.danielweisser.android.ldapsync.platform;
+package org.mbs3.android.ufpb.platform;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
+
+import org.mbs3.android.ufpb.Constants;
+import org.mbs3.android.ufpb.client.Address;
+import org.mbs3.android.ufpb.client.Contact;
+import org.mbs3.android.ufpb.syncadapter.Logger;
 
 import android.content.ContentProviderClient;
 import android.content.ContentProviderOperation;
@@ -31,10 +36,6 @@ import android.provider.ContactsContract.CommonDataKinds.Photo;
 import android.provider.ContactsContract.CommonDataKinds.StructuredName;
 import android.provider.ContactsContract.CommonDataKinds.StructuredPostal;
 import android.util.Log;
-import de.danielweisser.android.ldapsync.Constants;
-import de.danielweisser.android.ldapsync.client.Address;
-import de.danielweisser.android.ldapsync.client.Contact;
-import de.danielweisser.android.ldapsync.syncadapter.Logger;
 
 /**
  * Class for managing contacts sync related operations
@@ -131,7 +132,7 @@ public class ContactManager {
 					}
 				} else if (mimetype.equals(Organization.CONTENT_ITEM_TYPE)) { //organization
 					int type = c.getInt(c.getColumnIndex(Data.DATA2));
-					de.danielweisser.android.ldapsync.client.Organization org = new de.danielweisser.android.ldapsync.client.Organization();
+					org.mbs3.android.ufpb.client.Organization org = new org.mbs3.android.ufpb.client.Organization();
 					org.setTitle(c.getString(c.getColumnIndex(Data.DATA4)));
 					org.setCompany(c.getString(c.getColumnIndex(Data.DATA1)));
 					org.setOfficeLocation(c.getString(c.getColumnIndex(Data.DATA9)));

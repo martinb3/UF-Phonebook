@@ -1,4 +1,4 @@
-package de.danielweisser.android.ldapsync;
+package org.mbs3.android.ufpb;
 
 /**
  * Constants for the LDAP sync adapter.
@@ -12,12 +12,12 @@ public class Constants {
 	/**
 	 * Account type string.
 	 */
-	public static final String ACCOUNT_TYPE = "de.danielweisser.android.ldapsync";
+	public static final String ACCOUNT_TYPE = "org.mbs3.android.ufpb";
 
 	/**
 	 * Authtoken type string.
 	 */
-	public static final String AUTHTOKEN_TYPE = "de.danielweisser.android.ldapsync";
+	public static final String AUTHTOKEN_TYPE = "org.mbs3.android.ufpb";
 
 	/**
 	 * SD card LDAPSync folder.

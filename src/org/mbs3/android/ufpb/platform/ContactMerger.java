@@ -1,8 +1,11 @@
-package de.danielweisser.android.ldapsync.platform;
+package org.mbs3.android.ufpb.platform;
 
 
 import java.util.ArrayList;
 import java.util.Arrays;
+
+import org.mbs3.android.ufpb.client.Contact;
+import org.mbs3.android.ufpb.syncadapter.Logger;
 
 import android.content.ContentProviderOperation;
 import android.content.ContentValues;
@@ -18,8 +21,6 @@ import android.provider.ContactsContract.CommonDataKinds.StructuredName;
 import android.provider.ContactsContract.CommonDataKinds.StructuredPostal;
 import android.text.TextUtils;
 import android.util.Log;
-import de.danielweisser.android.ldapsync.client.Contact;
-import de.danielweisser.android.ldapsync.syncadapter.Logger;
 
 /**
  * A helper class that merges the fields of existing contacts with the fields of new contacts.
@@ -233,7 +234,7 @@ public class ContactMerger {
 		}
 	}
 	
-	private void updateAddress(de.danielweisser.android.ldapsync.client.Address newAddress, de.danielweisser.android.ldapsync.client.Address existingAddress, int adressType) {
+	private void updateAddress(org.mbs3.android.ufpb.client.Address newAddress, org.mbs3.android.ufpb.client.Address existingAddress, int adressType) {
 		final String selection = Data.RAW_CONTACT_ID + "=? AND " + Data.MIMETYPE + "=? AND " + StructuredPostal.TYPE + "=?";
 		if ((newAddress == null || newAddress.isEmpty()) && existingAddress != null) {
 			l.d("Delete address " + adressType + "(" + existingC.getFirstName() + " " + existingC.getLastName() + "), " + newAddress);
@@ -265,7 +266,7 @@ public class ContactMerger {
 		}
 	}
 
-	public void updateOrganization(de.danielweisser.android.ldapsync.client.Organization newOrg, de.danielweisser.android.ldapsync.client.Organization existingOrg, int orgType) {
+	public void updateOrganization(org.mbs3.android.ufpb.client.Organization newOrg, org.mbs3.android.ufpb.client.Organization existingOrg, int orgType) {
 		final String selection = Data.RAW_CONTACT_ID + "=? AND " + Data.MIMETYPE + "=? AND " + Organization.TYPE + "=?";
 		if ((newOrg == null || newOrg.isEmpty()) && existingOrg != null) {
 			l.d("Delete organization " + orgType + "(" + existingC.getFirstName() + " " + existingC.getLastName() + "), " + newOrg);

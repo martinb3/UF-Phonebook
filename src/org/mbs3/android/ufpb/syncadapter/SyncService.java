@@ -1,4 +1,4 @@
-package de.danielweisser.android.ldapsync.syncadapter;
+package org.mbs3.android.ufpb.syncadapter;
 
 import android.app.Service;
 import android.content.Intent;

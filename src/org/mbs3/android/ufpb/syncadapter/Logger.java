@@ -1,4 +1,4 @@
-package de.danielweisser.android.ldapsync.syncadapter;
+package org.mbs3.android.ufpb.syncadapter;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -8,9 +8,10 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
+import org.mbs3.android.ufpb.Constants;
+
 import android.os.Environment;
 import android.util.Log;
-import de.danielweisser.android.ldapsync.Constants;
 
 /**
  * A simple file logger, that logs the details of the synchronization process to SD card.

@@ -1,9 +1,16 @@
-package de.danielweisser.android.ldapsync.syncadapter;
+package org.mbs3.android.ufpb.syncadapter;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import org.mbs3.android.ufpb.Constants;
+import org.mbs3.android.ufpb.authenticator.LDAPAuthenticatorActivity;
+import org.mbs3.android.ufpb.client.Contact;
+import org.mbs3.android.ufpb.client.LDAPServerInstance;
+import org.mbs3.android.ufpb.client.LDAPUtilities;
+import org.mbs3.android.ufpb.platform.ContactManager;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
@@ -16,12 +23,6 @@ import android.content.SyncResult;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
-import de.danielweisser.android.ldapsync.Constants;
-import de.danielweisser.android.ldapsync.authenticator.LDAPAuthenticatorActivity;
-import de.danielweisser.android.ldapsync.client.LDAPServerInstance;
-import de.danielweisser.android.ldapsync.client.LDAPUtilities;
-import de.danielweisser.android.ldapsync.client.Contact;
-import de.danielweisser.android.ldapsync.platform.ContactManager;
 
 /**
  * SyncAdapter implementation for synchronizing LDAP contacts to the platform ContactOperations provider.

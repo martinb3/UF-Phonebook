@@ -1,4 +1,4 @@
-package de.danielweisser.android.ldapsync.client;
+package org.mbs3.android.ufpb.client;
 
 import android.text.TextUtils;
 

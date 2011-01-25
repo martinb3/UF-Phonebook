@@ -1,4 +1,4 @@
-package de.danielweisser.android.ldapsync.authenticator;
+package org.mbs3.android.ufpb.authenticator;
 
 import android.app.Service;
 import android.content.Intent;

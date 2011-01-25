@@ -1,4 +1,4 @@
-package de.danielweisser.android.ldapsync.client;
+package org.mbs3.android.ufpb.client;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -6,6 +6,8 @@ import java.util.HashSet;
 import java.util.List;
 
 import org.mbs3.android.ufpb.R;
+import org.mbs3.android.ufpb.authenticator.LDAPAuthenticatorActivity;
+import org.mbs3.android.ufpb.syncadapter.SyncService;
 
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -25,8 +27,6 @@ import com.unboundid.ldap.sdk.SearchResult;
 import com.unboundid.ldap.sdk.SearchResultEntry;
 import com.unboundid.ldap.sdk.SearchScope;
 
-import de.danielweisser.android.ldapsync.authenticator.LDAPAuthenticatorActivity;
-import de.danielweisser.android.ldapsync.syncadapter.SyncService;
 
 /**
  * Provides utility methods for communicating with the LDAP server.

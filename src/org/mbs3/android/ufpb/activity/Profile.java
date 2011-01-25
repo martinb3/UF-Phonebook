@@ -1,13 +1,13 @@
 package org.mbs3.android.ufpb.activity;
 
+import org.mbs3.android.ufpb.Constants;
 import org.mbs3.android.ufpb.R;
+import org.mbs3.android.ufpb.client.Address;
+import org.mbs3.android.ufpb.client.Contact;
+import org.mbs3.android.ufpb.client.Organization;
+import org.mbs3.android.ufpb.platform.ContactManager;
+import org.mbs3.android.ufpb.syncadapter.Logger;
 
-import de.danielweisser.android.ldapsync.Constants;
-import de.danielweisser.android.ldapsync.client.Address;
-import de.danielweisser.android.ldapsync.client.Contact;
-import de.danielweisser.android.ldapsync.client.Organization;
-import de.danielweisser.android.ldapsync.platform.ContactManager;
-import de.danielweisser.android.ldapsync.syncadapter.Logger;
 import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
