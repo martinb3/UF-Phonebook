@@ -171,9 +171,9 @@ public class Contact {
 					|| (user.hasAttribute(mB.getString(LASTNAME)) ? user.getAttributeValue(mB.getString(LASTNAME)) : null) == null) {
 				return null;
 			}
-			c.setWorkPhone(user.hasAttribute(mB.getString(TELEPHONE)) ? user.getAttributeValue(mB.getString(TELEPHONE)) : null);
-			c.setCellWorkPhone(user.hasAttribute(mB.getString(MOBILE)) ? user.getAttributeValue(mB.getString(MOBILE)) : null);
-			c.setHomePhone(user.hasAttribute(mB.getString(HOMEPHONE)) ? user.getAttributeValue(mB.getString(HOMEPHONE)) : null);
+			c.setWorkPhone(user.hasAttribute(mB.getString(TELEPHONE)) && !user.getAttributeValue(mB.getString(TELEPHONE)).trim().equals("+1") ? user.getAttributeValue(mB.getString(TELEPHONE)) : null);
+			c.setCellWorkPhone(user.hasAttribute(mB.getString(MOBILE)) && !user.getAttributeValue(mB.getString(MOBILE)).trim().equals("+1") ? user.getAttributeValue(mB.getString(MOBILE)) : null);
+			c.setHomePhone(user.hasAttribute(mB.getString(HOMEPHONE)) && !user.getAttributeValue(mB.getString(HOMEPHONE)).trim().equals("+1") ? user.getAttributeValue(mB.getString(HOMEPHONE)) : null);
 			c.setEmails(user.hasAttribute(mB.getString(MAIL)) ? user.getAttributeValues(mB.getString(MAIL)) : null);
 			
 			c.setUfid(user.hasAttribute(mB.getString(UFID)) ? user.getAttributeValue(mB.getString(UFID)) : null);

@@ -148,7 +148,7 @@ public class ContactManager {
 	public Contact getContactByDn(Context context, String accountName, String dn) {
 		
 		final String selection = Data.RAW_CONTACT_ID + "=?";
-		final String[] projection = new String[] { Data.MIMETYPE, Data.DATA1, Data.DATA2, Data.DATA3, Data.DATA4, Data.DATA6, Data.DATA7, Data.DATA8, Data.DATA9, Data.DATA10, Data.DATA15 };
+		final String[] projection = new String[] { Data.MIMETYPE, Data.DATA1, Data.DATA2, Data.DATA3, Data.DATA4, Data.DATA5, Data.DATA6, Data.DATA7, Data.DATA8, Data.DATA9, Data.DATA10, Data.DATA15 };
 		
 		try {
 			final ContentResolver resolver = context.getContentResolver();
@@ -184,7 +184,7 @@ public class ContactManager {
 		Contact existingContact = new Contact();
 
 		final String selection = Data.RAW_CONTACT_ID + "=?";
-		final String[] projection = new String[] { Data.MIMETYPE, Data.DATA1, Data.DATA2, Data.DATA3, Data.DATA4, Data.DATA7, Data.DATA8, Data.DATA9, Data.DATA10, Data.DATA15 };
+		final String[] projection = new String[] { Data.MIMETYPE, Data.DATA1, Data.DATA2, Data.DATA3, Data.DATA4, Data.DATA5, Data.DATA6, Data.DATA7, Data.DATA8, Data.DATA9, Data.DATA10, Data.DATA15 };
 		
 		try {
 			final Cursor c = resolver.query(Data.CONTENT_URI, projection, selection, new String[] { rawContactId + "" }, null);
