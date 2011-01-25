@@ -279,6 +279,7 @@ public class ContactMerger {
 			cv.put(Organization.COMPANY, newOrg.getCompany());
 			cv.put(Organization.TITLE, newOrg.getTitle());
 			cv.put(Organization.OFFICE_LOCATION, newOrg.getOfficeLocation());
+			cv.put(Organization.JOB_DESCRIPTION, newOrg.getPrimaryAffiliation());
 			Builder insertOp = createInsert(rawContactId, cv);
 			ops.add(insertOp.build());
 		} else if (newOrg != null && !newOrg.isEmpty() && !newOrg.equals(existingOrg)) {
@@ -287,6 +288,7 @@ public class ContactMerger {
 			cv.put(Organization.COMPANY, newOrg.getCompany());
 			cv.put(Organization.TITLE, newOrg.getTitle());
 			cv.put(Organization.OFFICE_LOCATION, newOrg.getOfficeLocation());
+			cv.put(Organization.JOB_DESCRIPTION, newOrg.getPrimaryAffiliation());
 			Builder updateOp = ContentProviderOperation.newUpdate(addCallerIsSyncAdapterFlag(Data.CONTENT_URI)).withSelection(selection,
 					new String[] { rawContactId + "", Organization.CONTENT_ITEM_TYPE, orgType + "" }).withValues(cv);
 			ops.add(updateOp.build());

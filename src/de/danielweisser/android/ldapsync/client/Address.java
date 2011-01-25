@@ -9,6 +9,24 @@ import android.text.TextUtils;
  */
 public class Address {
 
+	@Override
+	public String toString() {
+		String ret = street;
+		if (city != null && !city.trim().equals(""))
+			ret += "\n" + city;
+
+		if (state != null && !state.trim().equals(""))
+			ret += "\n" + state;
+
+		if (zip != null && !zip.trim().equals(""))
+			zip += "\n" + zip;
+
+		if (country != null && !country.trim().equals(""))
+			ret += "\n" + country;
+		
+		return ret;
+	}
+
 	private String street = "";
 	private String city = "";
 	private String state = "";

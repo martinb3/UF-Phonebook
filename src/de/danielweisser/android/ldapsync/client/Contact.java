@@ -35,6 +35,7 @@ public class Contact {
 	public static String COUNTRY = "COUNTRY";
 	public static String UFID = "uflEduUniversityId";
 	
+	public static String PRIMARYAFFILIATION = "EDUPERSONPRIMARYAFFILIATION";
 	public static String OFFICELOCATION = "UFLEDUOFFICELOCATION";
 	public static String COMPANY = "O";
 	public static String TITLE = "TITLE";
@@ -61,7 +62,6 @@ public class Contact {
 	private byte[] image = null;
 	private Address waddress = null;
 	private Organization worg = null;
-	
 
 	public String getDisplayName() {
 		return displayName;
@@ -178,6 +178,7 @@ public class Contact {
 			
 			c.setUfid(user.hasAttribute(mB.getString(UFID)) ? user.getAttributeValue(mB.getString(UFID)) : null);
 			
+			
 			byte[] image = null;
 			if (user.hasAttribute(mB.getString(PHOTO))) {
 				byte[] array = user.getAttributeValueBytes(mB.getString(PHOTO));
@@ -220,11 +221,12 @@ public class Contact {
 			}
 			
 			// Get organization
-			if(user.hasAttribute(mB.getString(OFFICELOCATION)) || user.hasAttribute(mB.getString(COMPANY)) || user.hasAttribute(mB.getString(TITLE))) {
-
+			if(user.hasAttribute(mB.getString(OFFICELOCATION)) || user.hasAttribute(mB.getString(COMPANY)) || user.hasAttribute(mB.getString(TITLE)) || user.hasAttribute(mB.getString(PRIMARYAFFILIATION))) {
+				
 				Organization o = new Organization();
 				o.setCompany(user.hasAttribute(mB.getString(COMPANY)) ? user.getAttributeValue(mB.getString(COMPANY)) : null);
 				o.setTitle(user.hasAttribute(mB.getString(TITLE)) ? user.getAttributeValue(mB.getString(TITLE)) : null);
+				o.setPrimaryAffiliation(user.hasAttribute(mB.getString(PRIMARYAFFILIATION)) ? user.getAttributeValue(mB.getString(PRIMARYAFFILIATION)) : null);
 
 				//LINE1$LINE2$LINE3$CITY, STATE, COUNTRY$ZIP
 				String input = user.getAttributeValue(mB.getString(OFFICELOCATION))

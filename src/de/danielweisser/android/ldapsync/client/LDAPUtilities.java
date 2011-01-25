@@ -5,6 +5,8 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 
+import org.mbs3.android.ufpb.R;
+
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -23,7 +25,6 @@ import com.unboundid.ldap.sdk.SearchResult;
 import com.unboundid.ldap.sdk.SearchResultEntry;
 import com.unboundid.ldap.sdk.SearchScope;
 
-import de.danielweisser.android.ldapsync.R;
 import de.danielweisser.android.ldapsync.authenticator.LDAPAuthenticatorActivity;
 import de.danielweisser.android.ldapsync.syncadapter.SyncService;
 

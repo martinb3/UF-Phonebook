@@ -135,6 +135,7 @@ public class ContactManager {
 					org.setTitle(c.getString(c.getColumnIndex(Data.DATA4)));
 					org.setCompany(c.getString(c.getColumnIndex(Data.DATA1)));
 					org.setOfficeLocation(c.getString(c.getColumnIndex(Data.DATA9)));
+					org.setPrimaryAffiliation(c.getString(c.getColumnIndex(Organization.JOB_DESCRIPTION)));
 					if (type == Organization.TYPE_WORK) {
 						existingContact.setWorkOrganization(org);
 					}
@@ -146,7 +147,7 @@ public class ContactManager {
 	public Contact getContactByDn(Context context, String accountName, String dn) {
 		
 		final String selection = Data.RAW_CONTACT_ID + "=?";
-		final String[] projection = new String[] { Data.MIMETYPE, Data.DATA1, Data.DATA2, Data.DATA3, Data.DATA4, Data.DATA7, Data.DATA8, Data.DATA9, Data.DATA10, Data.DATA15 };
+		final String[] projection = new String[] { Data.MIMETYPE, Data.DATA1, Data.DATA2, Data.DATA3, Data.DATA4, Data.DATA6, Data.DATA7, Data.DATA8, Data.DATA9, Data.DATA10, Data.DATA15 };
 		
 		try {
 			final ContentResolver resolver = context.getContentResolver();

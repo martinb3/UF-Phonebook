@@ -7,6 +7,15 @@ public class Organization {
 	private String officelocation = "";
 	private String company = "";
 	private String title = "";
+	private String primaryAffiliation = "";
+	
+	public String getPrimaryAffiliation() {
+		return primaryAffiliation;
+	}
+
+	public void setPrimaryAffiliation(String primaryAffiliation) {
+		this.primaryAffiliation = primaryAffiliation;
+	}
 	
 	public void setOfficeLocation(String officelocation) {
 		this.officelocation = officelocation.trim();

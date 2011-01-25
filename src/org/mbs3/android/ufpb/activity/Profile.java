@@ -1,8 +1,11 @@
-package de.danielweisser.android.ldapsync.activity;
+package org.mbs3.android.ufpb.activity;
+
+import org.mbs3.android.ufpb.R;
 
 import de.danielweisser.android.ldapsync.Constants;
-import de.danielweisser.android.ldapsync.R;
+import de.danielweisser.android.ldapsync.client.Address;
 import de.danielweisser.android.ldapsync.client.Contact;
+import de.danielweisser.android.ldapsync.client.Organization;
 import de.danielweisser.android.ldapsync.platform.ContactManager;
 import de.danielweisser.android.ldapsync.syncadapter.Logger;
 import android.app.Activity;
@@ -10,6 +13,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.util.Linkify;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -23,7 +27,10 @@ public class Profile extends Activity implements OnClickListener {
 	private Contact currentContact = null;
 	
 	private TextView mDisplayName;
-	private TextView mEmail;
+	private TextView mPhone;
+	private TextView mGeneral;
+	private TextView mAddr;
+	private TextView mStaffInfo;
 	private Button mButton;
 	
 	@Override
@@ -50,14 +57,42 @@ public class Profile extends Activity implements OnClickListener {
 					// these aren't in the regular phone structured data
 					currentContact.setDn(dn);
 					currentContact.setUfid(ufid);
+					Organization organization = currentContact.getWorkOrganization();
+					Address waddr = currentContact.getWorkAddress();
 					
 					//map everything from contact c into textviews
 					mDisplayName.setText(currentContact.getDisplayName());
 					
-					String allEmails = "";
+					String general = "";
 					for(String email : currentContact.getEmails())
-						allEmails += email + "\n";
-					mEmail.setText(allEmails);
+						general += "Email: " + email + "\n";
+					
+					if(organization.getPrimaryAffiliation() != null && !organization.getPrimaryAffiliation().equals("")) general += "Affiliation: " + organization.getPrimaryAffiliation() + "\n";
+					mGeneral.setText(general);
+					Linkify.addLinks(mGeneral, Linkify.EMAIL_ADDRESSES);
+					
+					
+					String phone = "";
+					if(currentContact.getCellWorkPhone() != null && !currentContact.getCellWorkPhone().equals("")) phone += "Work cell: " + currentContact.getCellWorkPhone() + "\n";
+					if(currentContact.getHomePhone() != null && !currentContact.getHomePhone().equals("")) phone += "Home phone: " + currentContact.getHomePhone() + "\n";
+					if(currentContact.getWorkPhone() != null && !currentContact.getWorkPhone().equals("")) phone += "Work phone: " + currentContact.getWorkPhone() + "\n";
+					mPhone.setText(phone);
+					Linkify.addLinks(mPhone, Linkify.PHONE_NUMBERS);
+
+					String addr = "";
+					if(waddr != null && !waddr.toString().equals(""))
+						addr += "Preferred address: " + waddr.toString() + "\n";
+					if(organization.getOfficeLocation() != null && !organization.getOfficeLocation().equals(""))
+						addr += (!addr.equals("") ? "\n" : "") + "Office Location: " + organization.getOfficeLocation() + "\n";
+					mAddr.setText(addr);
+					Linkify.addLinks(mAddr, Linkify.MAP_ADDRESSES);
+					
+					String staffInfo = "";
+					if(organization.getCompany() != null && !organization.getCompany().equals(""))
+						staffInfo += "Unit: " + organization.getCompany() + "\n";
+					if(organization.getTitle() != null && !organization.getTitle().equals(""))
+						staffInfo += "Title: " + organization.getTitle() + "\n";
+					mStaffInfo.setText(staffInfo);
 				}
 				else
 					Log.w(TAG, "Contact NOT found for profile activity from DN: " + dn);
@@ -73,7 +108,11 @@ public class Profile extends Activity implements OnClickListener {
 	    setContentView(R.layout.fullcontactview);
 	    
 	    mDisplayName = (TextView) findViewById(R.id.profile_text_name);
-	    mEmail = (TextView) findViewById(R.id.profile_text_email);
+	    
+	    mGeneral = (TextView) findViewById(R.id.profile_text_general);
+	    mPhone = (TextView) findViewById(R.id.profile_text_phone);
+	    mAddr = (TextView) findViewById(R.id.profile_text_addresses);
+	    mStaffInfo = (TextView) findViewById(R.id.profile_text_staffinfo);
 	    
 	    mButton = (Button)findViewById(R.id.profile_button_webview);
 	    mButton.setOnClickListener(this);

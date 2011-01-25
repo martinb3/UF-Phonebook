@@ -1,285 +1,96 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-android:orientation="vertical" android:layout_width="fill_parent"
-android:layout_height="fill_parent"
->
-<ScrollView
-     android:scrollbars="vertical"
-     android:layout_height="fill_parent"
-     android:layout_width="fill_parent"
->
-<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-	android:stretchColumns="1"    
-	android:scrollbars="vertical"
-    >
-    
-    <TableRow android:layout_margin="2dip">
-            <TextView
-            android:layout_column="1"
-            android:text="UF Phonebook"
-            style="@android:style/TextAppearance.Large"
-            android:padding="3dip"
-            android:gravity="fill"
-            android:layout_width="wrap_content"
-            />
-        <ImageView
-            android:src="@drawable/ufdir"
-            android:gravity="right"
-            android:padding="3dip"
-            />
-    </TableRow>
-    
-    <View
-    android:gravity="fill"
-    android:layout_width="fill_parent"
-	android:layout_height="1dip"
-	android:paddingBottom="15dip"
-	android:paddingTop="15dip"
-	android:background="#777777" />
-    
-    <TableRow>
-	<TextView 
-		android:layout_column="1"
-		
-		android:gravity="left"
-		android:layout_height="wrap_content" android:layout_width="fill_parent"
-		android:ellipsize="marquee"
-		style="@android:style/TextAppearance.Medium"
-		android:hint="John Jacob Jingleheimer Schmidt" android:id="@+id/profile_text_name"  />
-	</TableRow>
-	
-	<View
-    android:layout_width="fill_parent"
-	android:layout_height="15dip"
-	android:paddingBottom="15dip"
-	android:background="#000000" />
-	
-    <TableRow>
-	<TextView 
-		android:layout_column="1"
-		android:layout_span="2"
-		android:layout_height="wrap_content" android:layout_width="fill_parent"
-		style="@android:style/TextAppearance.Small"
-		android:ellipsize="marquee"
-		android:gravity="left"
-		android:text="General Information" android:id="@+id/profile_label_gen"  />
-	</TableRow>
-	
-	<TableRow android:layout_margin="2dip">
-            <TextView
-            android:layout_column="1"
-            android:hint="jjjs@ufl.edu"
-            android:ellipsize="end"
-            style="@android:style/TextAppearance.Small"
-            android:padding="3dip"
-            android:gravity="left"
-            android:layout_width="wrap_content"
-            android:id="@+id/profile_text_email"
-            />
-        <TextView
-            android:text="Email"
-            android:ellipsize="end"
-            style="@android:style/TextAppearance.Small"
-            android:padding="3dip"
-            android:gravity="right"
-            android:layout_width="wrap_content"
-            />
-    </TableRow>
+	android:orientation="vertical" android:layout_width="fill_parent"
+	android:layout_height="fill_parent">
+	<ScrollView android:scrollbars="vertical"
+		android:layout_height="fill_parent" android:layout_width="fill_parent">
+		<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+			android:orientation="vertical" android:layout_width="fill_parent"
+			android:layout_height="fill_parent">
+			<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+				android:layout_width="fill_parent" android:layout_height="fill_parent"
+				android:stretchColumns="1" android:scrollbars="vertical">
 
-		<!-- 
-    
-    <TableRow android:layout_margin="2dip">
-    	<TextView
-            android:layout_column="1"
-            android:text="staff"
-            android:ellipsize="end"
-            style="@android:style/TextAppearance.Small"
-            android:padding="3dip"
-            android:gravity="fill"
-            android:layout_width="wrap_content"
-            />
-        <TextView
-            android:text="Affiliation"
-            android:ellipsize="end"
-            style="@android:style/TextAppearance.Small"
-            android:padding="3dip"
-            android:gravity="fill"
-            android:layout_width="wrap_content"
-            />
-    </TableRow>
+				<TableRow android:layout_margin="2dip">
+					<TextView android:layout_column="1" android:text="UF Phonebook"
+						style="@android:style/TextAppearance.Large" android:padding="3dip"
+						android:gravity="fill" android:layout_width="wrap_content" />
+					<ImageView android:src="@drawable/ufdir" android:gravity="right"
+						android:padding="3dip" />
+				</TableRow>
+			</TableLayout>
 
-	<View
-    android:layout_width="fill_parent"
-	android:layout_height="1dip"
-	android:paddingBottom="8dip"
-	android:background="#999999" />
-	
-    <TableRow>
-	<TextView 
-		android:layout_column="1"
-		android:layout_span="2"
-		android:gravity="left"
-		android:layout_height="wrap_content" android:layout_width="fill_parent"
-		style="@android:style/TextAppearance.Small"
-		android:text="Phone Numbers"
-		android:ellipsize="marquee" 
-		android:id="@+id/profile_label_gen"  />
-	</TableRow>
-	
-    <TableRow android:layout_margin="2dip">
-    	<TextView
-            android:layout_column="1"
-            android:text="352-555-1212"
-            android:ellipsize="end"
-            style="@android:style/TextAppearance.Small"
-            android:padding="3dip"
-            android:gravity="left"
-            android:layout_width="wrap_content"
-            />
-        <TextView
-            android:text="Preferred"
-            android:ellipsize="end"
-            style="@android:style/TextAppearance.Small"
-            android:padding="3dip"
-            android:gravity="right"
-            android:layout_width="wrap_content"
-            />
-    </TableRow>	
+			<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+				android:layout_width="fill_parent" android:layout_height="fill_parent"
+				android:stretchColumns="1" android:scrollbars="vertical">
+				<View android:gravity="fill" android:layout_width="fill_parent"
+					android:layout_height="1dip" android:paddingBottom="15dip"
+					android:paddingTop="15dip" android:background="#777777" />
+			</TableLayout>
 
-	
-	<View
-    android:layout_width="fill_parent"
-	android:layout_height="1dip"
-	android:paddingBottom="8dip"
-	android:background="#999999" />
-	
-    <TableRow>
-	<TextView 
-		android:layout_column="1"
-		android:layout_span="2"
-		android:layout_height="wrap_content" android:layout_width="fill_parent"
-		style="@android:style/TextAppearance.Small"
-		android:text="Addresses"
-		android:ellipsize="marquee" 
-		android:id="@+id/profile_label_gen"  />
-	</TableRow>
-	
-    <TableRow android:layout_margin="2dip">
-    	<TextView
-            android:layout_column="1"
-            android:text="PO BOX 112050 GAINESVILLE FL US 32611-2050"
-            android:ellipsize="end"
-            style="@android:style/TextAppearance.Small"
-            android:padding="3dip"
-            android:gravity="fill"
-            android:layout_width="wrap_content"
-            />
-        <TextView
-            android:text="Preferred"
-            android:ellipsize="end"
-            style="@android:style/TextAppearance.Small"
-            android:padding="3dip"
-            android:gravity="fill"
-            android:layout_width="wrap_content"
-            />
-    </TableRow>
+			<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+				android:layout_width="fill_parent" android:layout_height="fill_parent"
+				android:stretchColumns="1" android:scrollbars="vertical">
 
-    <TableRow android:layout_margin="2dip">
-    	<TextView
-            android:layout_column="1"
-            android:text="2124 NE WALDO RD STE 2101 GAINESVILLE FL US 32609-8922"
-            android:ellipsize="end"
-            style="@android:style/TextAppearance.Small"
-            android:padding="3dip"
-            android:gravity="fill"
-            android:layout_width="wrap_content"
-            />
-        <TextView
-            android:text="Preferred"
-            android:ellipsize="end"
-            style="@android:style/TextAppearance.Small"
-            android:padding="3dip"
-            android:gravity="fill"
-            android:layout_width="wrap_content"
-            />
-    </TableRow>
-    
-	<View
-    android:layout_width="fill_parent"
-	android:layout_height="1dip"
-	android:paddingBottom="8dip"
-	android:background="#999999" />
-	
-    <TableRow>
-	<TextView 
-		android:layout_column="1"
-		android:layout_span="2"
-		android:layout_height="wrap_content" android:layout_width="fill_parent"
-		style="@android:style/TextAppearance.Small"
-		android:ellipsize="marquee"
-		android:text="Staff Information" android:id="@+id/profile_label_gen"  />
-	</TableRow>
-	
-	    <TableRow android:layout_margin="2dip">
-    	<TextView
-            android:layout_column="1"
-            android:text="IT-CNS SA OPEN SYSTEMS GROUP"
-            android:ellipsize="end"
-            style="@android:style/TextAppearance.Small"
-            android:padding="3dip"
-            android:gravity="fill"
-            android:layout_width="wrap_content"
-            />
-        <TextView
-            android:text="Unit"
-            android:ellipsize="end"
-            style="@android:style/TextAppearance.Small"
-            android:padding="3dip"
-            android:gravity="fill"
-            android:layout_width="wrap_content"
-            />
-    </TableRow>
+				<TableRow>
+					<TextView android:layout_column="1" android:gravity="left"
+						android:layout_height="wrap_content" android:layout_width="fill_parent"
+						android:ellipsize="marquee" style="@android:style/TextAppearance.Medium"
+						android:hint="John Jacob Jingleheimer Schmidt" android:id="@+id/profile_text_name" />
+				</TableRow>
+			</TableLayout>
 
-    <TableRow android:layout_margin="2dip">
-    	<TextView
-            android:layout_column="1"
-            android:text="Jackass"
-            android:ellipsize="end"
-            style="@android:style/TextAppearance.Small"
-            android:padding="3dip"
-            android:gravity="fill"
-            android:layout_width="wrap_content"
-            />
-        <TextView
-            android:text="Title"
-            android:ellipsize="end"
-            style="@android:style/TextAppearance.Small"
-            android:padding="3dip"
-            android:gravity="fill"
-            android:layout_width="wrap_content"
-            />
-    </TableRow>
-     -->
-	
-    <TableRow android:layout_margin="2dip">
-            <Button
-            android:layout_column="1"
-            android:layout_span="2"
-            android:text="View on phonebook.ufl.edu"
-            style="@android:style/TextAppearance.Medium"
-            android:ellipsize="marquee"
-            android:padding="3dip"
-            android:gravity="center"
-            android:layout_width="wrap_content"
-            android:id="@+id/profile_button_webview"
-            android:textColor="#000000"
-            android:clickable="true"
-            />
-    </TableRow>
+			<View android:layout_width="fill_parent" android:layout_height="15dip"
+				android:paddingBottom="15dip" android:background="#000000" />
 
-</TableLayout>
-</ScrollView>
+			<TextView android:layout_column="1" android:layout_height="wrap_content"
+				style="@android:style/TextAppearance.Medium" android:ellipsize="marquee"
+				android:gravity="left" android:layout_width="wrap_content"
+				android:padding="3dip" android:text="General Information"
+				android:hint="General Information" android:id="@+id/profile_label_gen" />
+
+			<TextView android:layout_column="1" android:hint="Email: jjjs@ufl.edu"
+				android:ellipsize="end" style="@android:style/TextAppearance.Small"
+				android:padding="3dip" android:gravity="left" android:layout_width="wrap_content"
+				android:layout_height="wrap_content" android:id="@+id/profile_text_general" />
+				
+			<TextView android:layout_column="1" android:layout_height="wrap_content"
+				style="@android:style/TextAppearance.Medium" android:ellipsize="marquee"
+				android:gravity="left" android:layout_width="wrap_content"
+				android:padding="3dip" android:text="Phone Numbers" android:id="@+id/profile_label_phone" />
+				
+			<TextView android:layout_column="1" android:hint="Preferred: 352-555-1212"
+				android:ellipsize="end" style="@android:style/TextAppearance.Small"
+				android:padding="3dip" android:gravity="left" android:layout_width="wrap_content"
+				android:layout_height="wrap_content" android:id="@+id/profile_text_phone" />
+				
+			<TextView android:layout_column="1" android:layout_height="wrap_content"
+				style="@android:style/TextAppearance.Medium" android:ellipsize="marquee"
+				android:gravity="left" android:layout_width="wrap_content"
+				android:padding="3dip" android:text="Addresses" android:id="@+id/profile_label_addresses" />
+
+			<TextView android:layout_column="1" android:hint="Preferred: PO BOX 112050 GAINESVILLE FL US 32611-2050"
+				android:ellipsize="end" style="@android:style/TextAppearance.Small"
+				android:padding="3dip" android:gravity="left" android:layout_width="wrap_content"
+				android:layout_height="wrap_content" android:id="@+id/profile_text_addresses" />
+				
+			<TextView android:layout_column="1" android:layout_height="wrap_content"
+				style="@android:style/TextAppearance.Medium" android:ellipsize="marquee"
+				android:gravity="left" android:layout_width="wrap_content"
+				android:padding="3dip" android:text="Staff Information" android:id="@+id/profile_label_staff" />
+				
+			<TextView android:layout_column="1" android:hint="Unit: Foo"
+				android:ellipsize="end" style="@android:style/TextAppearance.Small"
+				android:padding="3dip" android:gravity="left" android:layout_width="wrap_content"
+				android:layout_height="wrap_content" android:id="@+id/profile_text_staffinfo" />
+
+			<Button android:layout_column="1" android:layout_span="2"
+				android:text="View on phonebook.ufl.edu" style="@android:style/TextAppearance.Medium"
+				android:ellipsize="marquee" android:padding="3dip" android:gravity="center"
+				android:layout_width="fill_parent" android:layout_height="wrap_content"
+				android:id="@+id/profile_button_webview" android:textColor="#000000"
+				android:clickable="true" />
+		</LinearLayout>
+	</ScrollView>
 
 </LinearLayout>

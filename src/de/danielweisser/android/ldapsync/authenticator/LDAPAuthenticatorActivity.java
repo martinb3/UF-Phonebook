@@ -1,5 +1,7 @@
 package de.danielweisser.android.ldapsync.authenticator;
 
+import org.mbs3.android.ufpb.R;
+
 import android.accounts.Account;
 import android.accounts.AccountAuthenticatorActivity;
 import android.accounts.AccountManager;
@@ -22,7 +24,6 @@ import android.widget.Spinner;
 import android.widget.ViewFlipper;
 import android.widget.AdapterView.OnItemSelectedListener;
 import de.danielweisser.android.ldapsync.Constants;
-import de.danielweisser.android.ldapsync.R;
 import de.danielweisser.android.ldapsync.client.Contact;
 import de.danielweisser.android.ldapsync.client.LDAPServerInstance;
 import de.danielweisser.android.ldapsync.client.LDAPUtilities;
@@ -124,6 +125,9 @@ public class LDAPAuthenticatorActivity extends AccountAuthenticatorActivity {
 	private String mUfid;
 	private EditText mUfidEdit;
 	
+	private String mPrimaryAffiliation;
+	private EditText mPrimaryAffiliationEdit;
+	
 	private Dialog dialog;
 
 	@Override
@@ -204,6 +208,10 @@ public class LDAPAuthenticatorActivity extends AccountAuthenticatorActivity {
 		mCompanyEdit = (EditText) findViewById(R.id.company_edit);
 		mCompanyEdit.setText(mCompany);
 		
+		mPrimaryAffiliationEdit = (EditText) findViewById(R.id.primaryaffiliation_edit);
+		mPrimaryAffiliationEdit.setText(mPrimaryAffiliation);
+		
+		
 		mTitleEdit = (EditText) findViewById(R.id.title_edit);
 		mTitleEdit.setText(mTitle);
 		
@@ -238,6 +246,7 @@ public class LDAPAuthenticatorActivity extends AccountAuthenticatorActivity {
 			mCompany = "o";
 			mTitle = "title";
 			mUfid = "uflEduUniversityId";
+			mPrimaryAffiliation = "eduPersonPrimaryAffiliation";
 			// mImage = "thumbnailphoto";
 		}
 	}
@@ -308,6 +317,7 @@ public class LDAPAuthenticatorActivity extends AccountAuthenticatorActivity {
 			userData.putString(PARAM_MAPPING + Contact.COMPANY, mCompany);
 			userData.putString(PARAM_MAPPING + Contact.TITLE, mTitle);
 			userData.putString(PARAM_MAPPING + Contact.UFID, mUfid);
+			userData.putString(PARAM_MAPPING + Contact.PRIMARYAFFILIATION, mPrimaryAffiliation);
 			mAccountManager.addAccountExplicitly(account, mPassword, userData);
 
 			// Set contacts sync for this account.
@@ -412,6 +422,7 @@ public class LDAPAuthenticatorActivity extends AccountAuthenticatorActivity {
 		mOfficeLocation = mOfficeLocationEdit.getText().toString();
 		
 		mUfid = mUfidEdit.getText().toString();
+		mPrimaryAffiliation = mPrimaryAffiliationEdit.getText().toString();
 
 		if (!mConfirmCredentials) {
 			finishLogin();
