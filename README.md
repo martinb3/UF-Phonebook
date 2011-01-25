@@ -11,6 +11,6 @@ How to use:
  I have designed this project to be a sync provider based off email addresses listed in the official UF Directory as exposed by ldap.ufl.edu. Add a new 'account,' and select "UF Phonebook Sync" for the type. Then, sit back & enjoy. If your contact's email address doesn't match with one in the directory, it won't be synced. I'm welcome to other *reasonable* suggestions of how this should work, especially if the mapping for new contacts can be 1-to-1.
   
 QR Code:
-<img src="https://github.com/martinb3/LDAP-Sync/raw/master/qr-code.png"/>
+![QR code image](https://github.com/martinb3/LDAP-Sync/raw/master/qr-code.png)
 
 Email martin@mbs3.org with questions / concerns / feedback.
