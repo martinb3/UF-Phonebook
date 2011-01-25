@@ -2,7 +2,7 @@ UF Phonebook Sync adapter for Android
 GNU LESSER GENERAL PUBLIC LICENSE (see LICENSE.TXT)
 
 License:
- This example has been heavily based off of the LDAP Sync adapter for Android by Daniel Weisser (https://github.com/weisserd/LDAP-Sync). He claims this is 'open source.' The only actual license file I can find was originally under 'lib\', was LGPL, but didn't match any of the library licenses included. I can only assume this was meant for the whole project license. I have asked the original author for confirmation at https://github.com/weisserd/LDAP-Sync/issues#issue/4.  
+ This example has been heavily based off of the LDAP Sync adapter for Android by Daniel Weisser (https://github.com/weisserd/LDAP-Sync). He has licensed his work as open source under the Apache 2.0 license.  
 
 Description/Summary:
  This work was based off an original Github project by Daniel Weisser. It also depends heavily on work done by UF WebAdmin (dwc, spoonstein, bfloyd, etc) and various system architects (asr, ipm, ebs, etc). As always, work like this stands on the shoulders of giants. Please join me in thanking them for all of their original work.
