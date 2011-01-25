@@ -1,4 +1,4 @@
-market://details?id=org.mbs3.android.ufcm
-D:\Users\Martin\Desktop>"D:\Program Files\Java\jdk1.6.0_23\bin\jarsigner.exe" -verbose UFCampusMap.apk mbs3android
-D:\Users\Martin\Desktop>"D:\Users\Martin\Java Libraries\android-sdk-windows\tools\zipalign.exe" -v 4 UFCampusMap.apk UFCampusMap-aligned.apk
+market://details?id=org.mbs3.android.ufpb
+D:\Users\Martin\Desktop     "D:\Program Files\Java\jdk1.6.0_23\bin\jarsigner.exe" -verbose LDAPSync.apk mbs3android
+D:\Users\Martin\Desktop     "D:\Users\Martin\Java Libraries\android-sdk-windows\tools\zipalign.exe" -v 4 LDAPSync.apk LDAPSync-aligned.apk
 D:\Users\Martin\.keystore for keystore
