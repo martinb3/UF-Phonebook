@@ -60,7 +60,6 @@ public class Profile extends Activity implements OnClickListener {
 					// these aren't in the regular phone structured data
 					currentContact.setDn(dn);
 					currentContact.setUfid(ufid);
-					Organization organization = currentContact.getWorkOrganization();
 					Address waddr = currentContact.getWorkAddress();
 					
 					//map everything from contact c into textviews
@@ -69,8 +68,12 @@ public class Profile extends Activity implements OnClickListener {
 					String general = "";
 					for(String email : currentContact.getEmails())
 						general += "Email: " + email + "\n";
+
+					Organization org = currentContact.getWorkOrganization();
+					if(org != null && org.getPrimaryAffiliation() != null && !org.getPrimaryAffiliation().equals("")) 
+						general += "Affiliation: " + org.getPrimaryAffiliation() + "\n";
 					
-					if(organization.getPrimaryAffiliation() != null && !organization.getPrimaryAffiliation().equals("")) general += "Affiliation: " + organization.getPrimaryAffiliation() + "\n";
+					
 					mGeneral.setText(general);
 					Linkify.addLinks(mGeneral, Linkify.EMAIL_ADDRESSES);
 					
@@ -85,16 +88,16 @@ public class Profile extends Activity implements OnClickListener {
 					String addr = "";
 					if(waddr != null && !waddr.toFancyString().equals(""))
 						addr += "Preferred address: " + waddr.toFancyString() + "\n";
-					if(organization.getOfficeLocation() != null && !organization.getOfficeLocation().equals(""))
-						addr += (!addr.equals("") ? "\n" : "") + "Office Location: " + organization.getOfficeLocation() + "\n";
+					if(org != null && org.getOfficeLocation() != null && !org.getOfficeLocation().equals(""))
+						addr += (!addr.equals("") ? "\n" : "") + "Office Location: " + org.getOfficeLocation() + "\n";
 					mAddr.setText(addr);
 					Linkify.addLinks(mAddr, Linkify.MAP_ADDRESSES);
 					
 					String staffInfo = "";
-					if(organization.getCompany() != null && !organization.getCompany().equals(""))
-						staffInfo += "Unit: " + organization.getCompany() + "\n";
-					if(organization.getTitle() != null && !organization.getTitle().equals(""))
-						staffInfo += "Title: " + organization.getTitle() + "\n";
+					if(org != null && org.getCompany() != null && !org.getCompany().equals(""))
+						staffInfo += "Unit: " + org.getCompany() + "\n";
+					if(org != null && org.getTitle() != null && !org.getTitle().equals(""))
+						staffInfo += "Title: " + org.getTitle() + "\n";
 					mStaffInfo.setText(staffInfo);
 				}
 				else {
