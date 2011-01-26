@@ -18,7 +18,7 @@ public class Organization {
 	}
 	
 	public void setOfficeLocation(String officelocation) {
-		this.officelocation = officelocation.trim();
+		this.officelocation = officelocation;
 	}
 
 	public String getOfficeLocation() {
@@ -26,7 +26,7 @@ public class Organization {
 	}
 	
 	public void setCompany(String company) {
-		this.company = "UF " + company.trim();
+		this.company = company;
 	}
 
 	public String getCompany() {
@@ -34,7 +34,7 @@ public class Organization {
 	}
 	
 	public void setTitle(String title) {
-		this.title = title.trim();
+		this.title = title;
 	}
 
 	public String getTitle() {
@@ -88,5 +88,11 @@ public class Organization {
 		} else if (!title.equals(other.title))
 			return false;
 		return true;
+	}
+
+	@Override
+	public String toString() {
+		return "Organization [primaryAffiliation=" + primaryAffiliation + ", company=" + company + ", officelocation=" + officelocation + ", title=" + title
+				+ "]";
 	}
 }

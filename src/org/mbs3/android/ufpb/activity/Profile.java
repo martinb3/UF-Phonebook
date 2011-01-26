@@ -9,6 +9,9 @@ import org.mbs3.android.ufpb.platform.ContactManager;
 import org.mbs3.android.ufpb.syncadapter.Logger;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -80,8 +83,8 @@ public class Profile extends Activity implements OnClickListener {
 					Linkify.addLinks(mPhone, Linkify.PHONE_NUMBERS);
 
 					String addr = "";
-					if(waddr != null && !waddr.toString().equals(""))
-						addr += "Preferred address: " + waddr.toString() + "\n";
+					if(waddr != null && !waddr.toFancyString().equals(""))
+						addr += "Preferred address: " + waddr.toFancyString() + "\n";
 					if(organization.getOfficeLocation() != null && !organization.getOfficeLocation().equals(""))
 						addr += (!addr.equals("") ? "\n" : "") + "Office Location: " + organization.getOfficeLocation() + "\n";
 					mAddr.setText(addr);
@@ -94,11 +97,35 @@ public class Profile extends Activity implements OnClickListener {
 						staffInfo += "Title: " + organization.getTitle() + "\n";
 					mStaffInfo.setText(staffInfo);
 				}
-				else
+				else {
 					Log.w(TAG, "Contact NOT found for profile activity from DN: " + dn);
+					showDialog(Constants.DIALOG_RESYNC);
+				}
 			}
 			cursor.close();
 		}
+	}
+	
+	@Override
+	protected Dialog onCreateDialog(int id) {
+		Dialog dialog;
+	    switch(id) {
+	    case Constants.DIALOG_RESYNC:
+	    	AlertDialog.Builder builder = new AlertDialog.Builder(this);
+	    	builder.setMessage("Profile not found. Please wait for another sync.\n\nIf this problem persists, remove and re-add the UF Phonebook Sync account.")
+	    	       .setCancelable(true)
+	    	       .setNegativeButton("OK", new DialogInterface.OnClickListener() {
+	    	           public void onClick(DialogInterface dialog, int id) {
+	    	                dialog.cancel();
+	    	                finish();
+	    	           }
+	    	       });
+	    	dialog = builder.create();
+	        break;
+	    default:
+	        dialog = null;
+	    }
+	    return dialog;
 	}
 
 	public void onCreate(Bundle savedInstanceState) {

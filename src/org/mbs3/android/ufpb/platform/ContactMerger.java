@@ -4,6 +4,7 @@ package org.mbs3.android.ufpb.platform;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import org.mbs3.android.ufpb.Constants;
 import org.mbs3.android.ufpb.client.Contact;
 import org.mbs3.android.ufpb.syncadapter.Logger;
 
@@ -181,45 +182,40 @@ public class ContactMerger {
 	}
 	
 	public void updateCustomProfile() {
-		//Create a Data record of custom type "vnd.android.cursor.item/vnd.fm.last.android.profile" to display a link to the Last.fm profile
-		String PROFILE_MIME_TYPE = "vnd.android.cursor.item/vnd.org.mbs3.android.ufpb.profile";
+		String dn = newC.getDn();
 		
-		if(rawContactId == -1) {
-			String dn = newC.getDn();
-			l.d("Create new profile item for " + newC);
-			Log.d(TAG , "Create new profile item for " + newC);
-			ContentValues cv = new ContentValues();
-			
-			// first insert / create
-			cv.put(ContactsContract.Data.MIMETYPE, PROFILE_MIME_TYPE);
-			cv.put(ContactsContract.Data.DATA1, dn);
-			cv.put(ContactsContract.Data.DATA2, "UF Phonebook");
-			cv.put(ContactsContract.Data.DATA3, "Click to view entry");
-			cv.put(ContactsContract.Data.DATA4, newC.getUfid());
-			
-			Builder insertOp = createInsert(rawContactId, cv);
-			ops.add(insertOp.build());
-		} else {
+		// always try a delete if there's a raw contact ID
+		if(rawContactId != -1) {
 			String selection = Data.RAW_CONTACT_ID + "=? AND " + ContactsContract.Data.MIMETYPE + "=?";
 			
-			String dn = newC.getDn();
-			l.d("Delete existing profile for " + dn);
-			Log.d(TAG,"Delete existing profile for " + dn);
-			
-			ContentValues cv = new ContentValues();
-			
-			// after, to update
-			cv.put(ContactsContract.Data.DATA1, dn);
-			cv.put(ContactsContract.Data.DATA2, "UF Phonebook");
-			cv.put(ContactsContract.Data.DATA3, "Click to view entry");
-			cv.put(ContactsContract.Data.DATA4, newC.getUfid());
-			
-			ops.add(ContentProviderOperation.newUpdate(addCallerIsSyncAdapterFlag(Data.CONTENT_URI)).withSelection(selection,
-				new String[] { rawContactId + "",  PROFILE_MIME_TYPE})
-				.withValues(cv)
-				.build());
-			
+			String msg = "Delete existing profile for raw contact "+rawContactId+", newC=" + newC;
+			l.d(msg); Log.d(TAG,msg);
+			ops.add(ContentProviderOperation.newDelete(addCallerIsSyncAdapterFlag(Data.CONTENT_URI))
+				.withSelection(selection, new String[] { rawContactId + "",  Constants.PROFILE_MIME_TYPE})
+				.build()
+				);
 		}
+		else {
+			String msg = "Didn't delete existing profile for raw contact "+rawContactId+", dn=" + dn;
+			l.d(msg); Log.d(TAG,msg);
+		}
+		
+		// then insert a new profile
+		
+		String msg = "Create new profile for raw contact "+rawContactId+", newC=" + newC;
+		l.d(msg);
+		Log.d(TAG , msg);
+		ContentValues cv = new ContentValues();
+		
+		// first insert / create
+		cv.put(ContactsContract.Data.MIMETYPE, Constants.PROFILE_MIME_TYPE);
+		cv.put(ContactsContract.Data.DATA1, dn);
+		cv.put(ContactsContract.Data.DATA2, Constants.ACCOUNT_NAME);
+		cv.put(ContactsContract.Data.DATA3, "Click to view entry");
+		cv.put(ContactsContract.Data.DATA4, newC.getUfid());
+		
+		Builder insertOp = createInsert(rawContactId, cv);
+		ops.add(insertOp.build());
 	}
 
 	public void updateAddress(int adressType) {

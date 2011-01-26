@@ -72,15 +72,17 @@ public class ContactManager {
 		for (final Contact contact : contacts) {
 			if (contactsOnPhone.containsKey(contact.getDn())) {
 				Long contactId = contactsOnPhone.get(contact.getDn());
-				Log.d(TAG, "Update contact: " + contact.getDn());
-				l.d("Update contact: " + contact.getDn() + " " + contact.getFirstName() + " " + contact.getLastName() + " (" + contactId + ")");
+				String msg = "Update contact under account "+accountName+": " + contact + " (" + contactId + ")";
+				Log.d(TAG, msg);
+				l.d(msg);
 				updateContact(resolver, contactId, contact);
 				syncResult.stats.numUpdates++;
 				contactsOnPhone.remove(contact.getDn());
 			} else {
-				Log.d(TAG, "Add contact: " + contact.getFirstName() + " " + contact.getLastName());
-				l.d("Add contact: " + contact.getFirstName() + " " + contact.getLastName());
-				addContact(resolver, accountName, contact);
+				String msg = "Add contact under account "+accountName+": " + contact;
+				Log.d(TAG, msg);
+				l.d(msg);
+				addContact(resolver, contact);
 				syncResult.stats.numInserts++;
 			}
 		}
@@ -147,7 +149,7 @@ public class ContactManager {
 	
 	public Contact getContactByDn(Context context, String accountName, String dn) {
 		
-		final String selection = Data.RAW_CONTACT_ID + "=?";
+		final String selection = Data.RAW_CONTACT_ID + "=?" + " AND " + RawContacts.ACCOUNT_NAME + "=?";
 		final String[] projection = new String[] { Data.MIMETYPE, Data.DATA1, Data.DATA2, Data.DATA3, Data.DATA4, Data.DATA5, Data.DATA6, Data.DATA7, Data.DATA8, Data.DATA9, Data.DATA10, Data.DATA15 };
 		
 		try {
@@ -157,9 +159,9 @@ public class ContactManager {
 			HashMap<String, Long> contactsOnPhone = getAllContactsOnPhone(resolver, accountName);
 			
 			Long contactId = contactsOnPhone.get(dn);
-			final Cursor c = resolver.query(Data.CONTENT_URI, projection, selection, new String[] { contactId + "" }, null);
+			final Cursor c = resolver.query(Data.CONTENT_URI, projection, selection, new String[] { contactId + "", accountName }, null);
 			
-			Log.i(TAG, "Fetching full contact for profile using DN " + dn + " and raw ID " + contactId + " (resulted in "+c.getCount()+" raw contacts)");
+			Log.i(TAG, "Fetching full contact for profile using DN " + dn + ", account "+accountName+", and raw ID " + contactId + " (resulted in "+c.getCount()+" raw contacts)");
 			
 			Contact existingContact = null;
 			if(c.getCount() > 0) {
@@ -233,6 +235,8 @@ public class ContactManager {
 			}
 			c.close();
 		}
+		
+		Log.d(TAG, "Found all contacts of account name " + accountName + ": #="+contactsOnPhone.size());
 		return contactsOnPhone;
 	}
 
@@ -249,14 +253,14 @@ public class ContactManager {
 	 * @param accountName
 	 * @param contact
 	 */
-	private void addContact(ContentResolver resolver, String accountName, Contact contact) {
+	private void addContact(ContentResolver resolver, Contact contact) {
 		ArrayList<ContentProviderOperation> ops = new ArrayList<ContentProviderOperation>();
 
 		Uri uri = addCallerIsSyncAdapterFlag(RawContacts.CONTENT_URI);
 
 		ContentValues cv = new ContentValues();
 		cv.put(RawContacts.ACCOUNT_TYPE, Constants.ACCOUNT_TYPE);
-		cv.put(RawContacts.ACCOUNT_NAME, accountName);
+		cv.put(RawContacts.ACCOUNT_NAME, Constants.ACCOUNT_NAME);
 		cv.put(RawContacts.SOURCE_ID, contact.getDn());
 		cv.put(RawContacts.SYNC1, contact.getUfid());
 

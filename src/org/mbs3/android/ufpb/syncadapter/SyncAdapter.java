@@ -30,7 +30,7 @@ import android.util.Log;
  * @author <a href="mailto:daniel.weisser@gmx.de">Daniel Weisser</a>
  */
 public class SyncAdapter extends AbstractThreadedSyncAdapter {
-	private static final String TAG = "LDAPSyncAdapter";
+	private static final String TAG = "SyncAdapter";
 
 	private final AccountManager mAccountManager;
 	private final Context mContext;
@@ -46,10 +46,12 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 	@Override
 	public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult syncResult) {
 		Logger l = new Logger();
-
 		l.startLogging();
+		
 		l.d("Start the sync");
 		Log.d(TAG, "Start the sync.");
+		
+		
 		List<Contact> users = new ArrayList<Contact>();
 		String authtoken = null;
 		try {
@@ -98,8 +100,9 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 			// update the last synced date.
 			mLastUpdated = new Date();
 			// update platform contacts.
-			Log.d(TAG, "Calling contactManager's sync contacts");
-			l.d("Calling contactManager's sync contacts");
+			String msg = "Calling contactManager's sync contacts for " + account.name + " with " + users.size() + " users";
+			Log.d(TAG, msg);
+			l.d(msg);
 			ContactManager cm = new ContactManager(l);
 			cm.syncContacts(mContext, account.name, users, syncResult);
 			l.stopLogging();

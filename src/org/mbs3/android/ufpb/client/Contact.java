@@ -202,10 +202,9 @@ public class Contact {
 			if(user.hasAttribute(mB.getString(STREET)) && user.getAttributeValue(mB.getString(STREET)).contains("$")) {
 				Address a = new Address();
 				//LINE1$LINE2$LINE3$CITY, STATE, COUNTRY$ZIP
-				String input = user.getAttributeValue(mB.getString(STREET))
-					.replace("$", ", ")
-					.replace(" FL, US", " FL");
-					;
+				String input = user.getAttributeValue(mB.getString(STREET));
+				if (input != null)
+					input = input.replace("$", ", ").replace(" FL, US", " FL");					;
 				a.setStreet(input);
 				c.setWorkAddress(a);
 			}
@@ -229,10 +228,9 @@ public class Contact {
 				o.setPrimaryAffiliation(user.hasAttribute(mB.getString(PRIMARYAFFILIATION)) ? user.getAttributeValue(mB.getString(PRIMARYAFFILIATION)) : null);
 
 				//LINE1$LINE2$LINE3$CITY, STATE, COUNTRY$ZIP
-				String input = user.getAttributeValue(mB.getString(OFFICELOCATION))
-					.replace("$", ", ")
-					.replace(" FL, US", " FL");
-					;
+				String input = user.getAttributeValue(mB.getString(OFFICELOCATION));
+				if (input != null)
+					input = input.replace("$", ", ").replace(" FL, US", " FL");					;
 					
 				o.setOfficeLocation(input);
 				c.setWorkOrganization(o);
@@ -248,6 +246,6 @@ public class Contact {
 
 	@Override
 	public String toString() {
-		return "Contact [displayName=" + displayName + ", dn=" + dn + "]";
+		return "Contact [displayName=" + displayName + ", dn=" + dn + ",waddr="+waddress+",worg="+worg+"]";
 	}
 }

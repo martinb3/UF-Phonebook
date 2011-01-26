@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 	<string name="label">UF Phonebook Sync</string>
-	<string name="app_name">UF Phonebook</string>
+	<string name="app_name">UF Phonebook Sync</string>
 
 	<!-- AuthenticatorActivity -->
 	<skip />

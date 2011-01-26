@@ -11,6 +11,10 @@ public class Address {
 
 	@Override
 	public String toString() {
+		return "Address [street=" + street + ", city=" + city + ", state=" + state + ", zip=" + zip + ", country=" + country + "]";
+	}
+
+	public String toFancyString() {
 		String ret = street;
 		if (city != null && !city.trim().equals(""))
 			ret += "\n" + city;

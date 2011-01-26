@@ -36,7 +36,7 @@
 					<TextView android:layout_column="1" android:gravity="left"
 						android:layout_height="wrap_content" android:layout_width="fill_parent"
 						android:ellipsize="marquee" style="@android:style/TextAppearance.Medium"
-						android:hint="John Jacob Jingleheimer Schmidt" android:id="@+id/profile_text_name" />
+						android:hint="Unknown Name" android:id="@+id/profile_text_name" />
 				</TableRow>
 			</TableLayout>
 
@@ -47,9 +47,9 @@
 				style="@android:style/TextAppearance.Medium" android:ellipsize="marquee"
 				android:gravity="left" android:layout_width="wrap_content"
 				android:padding="3dip" android:text="General Information"
-				android:hint="General Information" android:id="@+id/profile_label_gen" />
+				android:id="@+id/profile_label_gen" />
 
-			<TextView android:layout_column="1" android:hint="Email: jjjs@ufl.edu"
+			<TextView android:layout_column="1" android:hint="Email: Unknown"
 				android:ellipsize="end" style="@android:style/TextAppearance.Small"
 				android:padding="3dip" android:gravity="left" android:layout_width="wrap_content"
 				android:layout_height="wrap_content" android:id="@+id/profile_text_general" />
@@ -59,7 +59,7 @@
 				android:gravity="left" android:layout_width="wrap_content"
 				android:padding="3dip" android:text="Phone Numbers" android:id="@+id/profile_label_phone" />
 				
-			<TextView android:layout_column="1" android:hint="Preferred: 352-555-1212"
+			<TextView android:layout_column="1" android:hint="Preferred: Unknown"
 				android:ellipsize="end" style="@android:style/TextAppearance.Small"
 				android:padding="3dip" android:gravity="left" android:layout_width="wrap_content"
 				android:layout_height="wrap_content" android:id="@+id/profile_text_phone" />
@@ -69,7 +69,7 @@
 				android:gravity="left" android:layout_width="wrap_content"
 				android:padding="3dip" android:text="Addresses" android:id="@+id/profile_label_addresses" />
 
-			<TextView android:layout_column="1" android:hint="Preferred: PO BOX 112050 GAINESVILLE FL US 32611-2050"
+			<TextView android:layout_column="1" android:hint="Preferred: Unknown"
 				android:ellipsize="end" style="@android:style/TextAppearance.Small"
 				android:padding="3dip" android:gravity="left" android:layout_width="wrap_content"
 				android:layout_height="wrap_content" android:id="@+id/profile_text_addresses" />
@@ -79,7 +79,7 @@
 				android:gravity="left" android:layout_width="wrap_content"
 				android:padding="3dip" android:text="Staff Information" android:id="@+id/profile_label_staff" />
 				
-			<TextView android:layout_column="1" android:hint="Unit: Foo"
+			<TextView android:layout_column="1" android:hint="Unit: Unknown"
 				android:ellipsize="end" style="@android:style/TextAppearance.Small"
 				android:padding="3dip" android:gravity="left" android:layout_width="wrap_content"
 				android:layout_height="wrap_content" android:id="@+id/profile_text_staffinfo" />
