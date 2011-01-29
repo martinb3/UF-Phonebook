@@ -2,7 +2,6 @@ package org.mbs3.android.ufpb.platform;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map.Entry;
 
 import org.mbs3.android.ufpb.Constants;
@@ -25,6 +24,7 @@ import android.database.sqlite.SQLiteException;
 import android.net.Uri;
 import android.os.RemoteException;
 import android.provider.ContactsContract;
+import android.provider.ContactsContract.AggregationExceptions;
 import android.provider.ContactsContract.Data;
 import android.provider.ContactsContract.Groups;
 import android.provider.ContactsContract.RawContacts;
@@ -62,27 +62,38 @@ public class ContactManager {
 	 * @param syncResult
 	 *            SyncResults for tracking the sync
 	 */
-	public synchronized void syncContacts(Context context, String accountName, List<Contact> contacts, SyncResult syncResult) {
+	public synchronized void syncContacts(Context context, String accountName, HashMap<Contact, Long> contacts, SyncResult syncResult) {
 		final ContentResolver resolver = context.getContentResolver();
 
 		// Get all phone contacts for the LDAP account
 		HashMap<String, Long> contactsOnPhone = getAllContactsOnPhone(resolver, accountName);
-
+		
 		// Update and create new contacts
-		for (final Contact contact : contacts) {
+		for (final Entry<Contact,Long> entry : contacts.entrySet()) {
+			final Contact contact = entry.getKey();
+			
 			if (contactsOnPhone.containsKey(contact.getDn())) {
 				Long contactId = contactsOnPhone.get(contact.getDn());
-				String msg = "Update contact under account "+accountName+": " + contact + " (" + contactId + ")";
+				String msg = "syncContacts: Update contact under account "+accountName+": " + contact + " (" + contactId + ")";
 				Log.d(TAG, msg);
 				l.d(msg);
 				updateContact(resolver, contactId, contact);
+				
+				// update aggregation 
+				// bind our contactId and entry.getValue() (contact id from origin)
+				bindAggregation(resolver, entry.getValue(), contactId);
+				
 				syncResult.stats.numUpdates++;
 				contactsOnPhone.remove(contact.getDn());
 			} else {
-				String msg = "Add contact under account "+accountName+": " + contact;
+				String msg = "syncContacts: Add contact under account "+accountName+": " + contact;
 				Log.d(TAG, msg);
 				l.d(msg);
-				addContact(resolver, contact);
+				Long contactId = addContact(resolver, contact);
+				
+				// update aggregation
+				// bind our contactId and entry.getValue() (contact id from origin)
+				bindAggregation(resolver, entry.getValue(), contactId);
 				syncResult.stats.numInserts++;
 			}
 		}
@@ -161,7 +172,7 @@ public class ContactManager {
 			Long contactId = contactsOnPhone.get(dn);
 			final Cursor c = resolver.query(Data.CONTENT_URI, projection, selection, new String[] { contactId + "", accountName }, null);
 			
-			Log.i(TAG, "Fetching full contact for profile using DN " + dn + ", account "+accountName+", and raw ID " + contactId + " (resulted in "+c.getCount()+" raw contacts)");
+			Log.i(TAG, "getContactByDn: Fetching full contact for profile using DN " + dn + ", account "+accountName+", and raw ID " + contactId + " (resulted in "+c.getCount()+" raw contacts)");
 			
 			Contact existingContact = null;
 			if(c.getCount() > 0) {
@@ -210,7 +221,7 @@ public class ContactManager {
 
 	private void deleteContact(ContentResolver resolver, Long rawContactId) {
 		try {
-			resolver.delete(RawContacts.CONTENT_URI, RawContacts.CONTACT_ID + "=?", new String[] { "" + rawContactId });
+			resolver.delete(RawContacts.CONTENT_URI, RawContacts._ID + "=?", new String[] { "" + rawContactId });
 		} catch (SQLiteException e) {
 			Log.e(TAG, e.getMessage(), e);
 		} catch (IllegalStateException e) {
@@ -231,7 +242,9 @@ public class ContactManager {
 		HashMap<String, Long> contactsOnPhone = new HashMap<String, Long>();
 		if (c != null) {
 			while (c.moveToNext()) {
-				contactsOnPhone.put(c.getString(c.getColumnIndex(RawContacts.SOURCE_ID)), c.getLong(c.getColumnIndex(Data._ID)));
+				String srcId = c.getString(c.getColumnIndex(RawContacts.SOURCE_ID));
+				long id = c.getLong(c.getColumnIndex(RawContacts._ID));
+				contactsOnPhone.put(srcId, id);
 			}
 			c.close();
 		}
@@ -253,7 +266,7 @@ public class ContactManager {
 	 * @param accountName
 	 * @param contact
 	 */
-	private void addContact(ContentResolver resolver, Contact contact) {
+	private long addContact(ContentResolver resolver, Contact contact) {
 		ArrayList<ContentProviderOperation> ops = new ArrayList<ContentProviderOperation>();
 
 		Uri uri = addCallerIsSyncAdapterFlag(RawContacts.CONTENT_URI);
@@ -267,19 +280,28 @@ public class ContactManager {
 		// This is the first insert into the raw contacts table
 		Builder builder = ContentProviderOperation.newInsert(uri).withValues(cv);
 		ContentProviderOperation i1 = builder.build();
+		
 		ops.add(i1);
-
 		prepareFields(-1, contact, new Contact(), ops, true);
 
 		// Now create the contact with a single batch operation
 		try {
+			
 			ContentProviderResult[] res = resolver.applyBatch(ContactsContract.AUTHORITY, ops);
 			// The first insert is the one generating the ID for this contact
 			long id = ContentUris.parseId(res[0].uri);
-			l.d("The new contact has id: " + id);
+			
+			String msg = "The new contact has id: " + id;
+			l.d(msg);
+			Log.d(TAG, msg);
+			
+			
+			return id;
 		} catch (Exception e) {
 			Log.e(TAG, "Cannot create contact ", e);
 		}
+		
+		return -1;
 	}
 
 	private void prepareFields(long rawContactId, Contact newC, Contact existingC, ArrayList<ContentProviderOperation> ops, boolean isNew) {
@@ -309,6 +331,81 @@ public class ContactManager {
 			client.insert(Settings.CONTENT_URI.buildUpon().appendQueryParameter(ContactsContract.CALLER_IS_SYNCADAPTER, "true").build(), cv);
 		} catch (RemoteException e) {
 			Log.d(TAG, "Cannot make the Group Visible");
+		}
+	}
+
+	public HashMap<Long,ArrayList<String>> getAllAccountEmailAddresses(ContentResolver resolver, String exceptAccountName) {
+		Log.d(TAG, "getAllAccountEmailAddresses: Searching for email addrs to sync except from account name " + exceptAccountName);
+		
+		HashMap<Long,ArrayList<String>> addrs = new HashMap<Long,ArrayList<String>>();
+		
+		Cursor accountCursor = resolver.query(RawContacts.CONTENT_URI, 
+				new String[]{RawContacts._ID},
+				RawContacts.ACCOUNT_NAME+" !=? OR " + RawContacts.ACCOUNT_NAME+" IS NULL",
+				new String[]{exceptAccountName}, null);
+		
+		Log.d(TAG, "getAllAccountEmailAddresses: Found " + accountCursor.getCount() + " accounts when looking for email addresses that aren't part of account " + exceptAccountName);
+		while(accountCursor.moveToNext()) {
+			long id = accountCursor.getLong(accountCursor.getColumnIndex(RawContacts._ID));
+			
+			ArrayList<String> emails = new ArrayList<String>();
+			Cursor emailCursor = resolver.query(ContactsContract.CommonDataKinds.Email.CONTENT_URI, 
+					new String[] {
+					Email.DATA1,
+					Email.DATA2,
+				}, 
+				Email.RAW_CONTACT_ID +"=?",
+				new String[]{id+""},
+				null);
+			
+			while(emailCursor.moveToNext()) {
+				String DATA2 = emailCursor.getString(emailCursor.getColumnIndex(Email.DATA1));
+				// email type, we don't care
+				//int DATA3 = c1.getInt(2);
+				
+				emails.add(DATA2);
+				Log.d(TAG, "getAllAccountEmailAddresses: Found email " + DATA2 + " from raw contact ID " + id);
+			}
+			
+			if(emails.size() > 0)
+				addrs.put(id, emails);
+			emailCursor.close();
+		}
+		accountCursor.close();
+		Log.d(TAG, "getAllAccountEmailAddresses: Found " + accountCursor.getCount() + " accounts when looking for email addresses that aren't part of account " + exceptAccountName);
+		
+		Cursor accountCursor2 = resolver.query(RawContacts.CONTENT_URI, 
+				new String[]{RawContacts._ID, RawContacts.ACCOUNT_NAME, RawContacts.ACCOUNT_TYPE, RawContacts.SOURCE_ID},
+				null,
+				null,
+				null);
+		while(accountCursor2.moveToNext()) {
+			Log.d(TAG, "Dumping _all_ accounts: Contact ID / Name / Type / Source ");
+			
+			Long id = accountCursor2.getLong(accountCursor2.getColumnIndex(RawContacts._ID));
+			String Name = accountCursor2.getString(accountCursor2.getColumnIndex(RawContacts.ACCOUNT_NAME));
+			String Type = accountCursor2.getString(accountCursor2.getColumnIndex(RawContacts.ACCOUNT_TYPE));
+			String Source = accountCursor2.getString(accountCursor2.getColumnIndex(RawContacts.SOURCE_ID));
+			
+			Log.d(TAG, "Dumping _all_ accounts: "+id+" / "+Name+" / "+Type+" / " + Source);
+		}
+		accountCursor2.close();
+		return addrs;
+	}
+	
+	private void bindAggregation(ContentResolver resolver, long raw1, long raw2) {
+		
+		Log.i(TAG, "Binding raw contact IDs " + raw1 + " and " + raw2);
+		
+		ContentValues values = new ContentValues();
+        values.put(AggregationExceptions.RAW_CONTACT_ID1, raw1);
+        values.put(AggregationExceptions.RAW_CONTACT_ID2, raw2);
+        values.put(AggregationExceptions.TYPE, AggregationExceptions.TYPE_KEEP_TOGETHER);
+		try {
+			resolver.update(AggregationExceptions.CONTENT_URI, values, null, null);
+		}
+		catch (Exception ex) {
+			Log.i(TAG, "Failed aggregation for raw1=" + raw1 + ", raw2=" + raw2, ex);
 		}
 	}
 }

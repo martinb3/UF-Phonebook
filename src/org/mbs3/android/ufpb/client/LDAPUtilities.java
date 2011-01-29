@@ -2,8 +2,9 @@ package org.mbs3.android.ufpb.client;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map.Entry;
 
 import org.mbs3.android.ufpb.R;
 import org.mbs3.android.ufpb.authenticator.LDAPAuthenticatorActivity;
@@ -14,10 +15,8 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
-import android.provider.ContactsContract;
 import android.util.Log;
 
 import com.unboundid.ldap.sdk.LDAPConnection;
@@ -99,54 +98,56 @@ public class LDAPUtilities {
 	 *            The caller Activity's context
 	 * @return List of all LDAP contacts
 	 */
-	public static List<Contact> fetchContacts(final LDAPServerInstance ldapServer, final String baseDN, final String searchFilter, final Bundle mappingBundle,
+	public static HashMap<Contact,Long> fetchContacts(final LDAPServerInstance ldapServer, final HashMap<Long, ArrayList<String>> emails, final String baseDN, final String searchFilter, final Bundle mappingBundle,
 			final Date mLastUpdated, final Context context) {
-		final ArrayList<Contact> friendList = new ArrayList<Contact>();
 
-		final HashSet<String> DNs = new HashSet<String>();
+		final HashMap<String,Long> DNs = new HashMap<String,Long>();
+		final HashMap<Contact,Long> friendList = new HashMap<Contact,Long>();
+		
+		Log.d(TAG, "fetchContacts: " + emails.size() +  " accounts that have email lists");
+		
 		LDAPConnection connection = null;
 		try {
 			connection = ldapServer.getConnection();
 
-			Cursor c1 = context.getContentResolver().query(ContactsContract.CommonDataKinds.Email.CONTENT_URI, 
-					new String[] {
-					ContactsContract.CommonDataKinds.Email.DATA1,
-					ContactsContract.CommonDataKinds.Email.DATA2
-			}, 
-			null, null, null);
-
-			while (c1.moveToNext()) {
-				String DATA1 = c1.getString(0);
-				int DATA2 = c1.getInt(1);
-
-				String emailFilter = "(&(mail="+DATA1+")"+searchFilter+")";
-				SearchResult searchResult = connection.search(baseDN, SearchScope.SUB, emailFilter, getUsedAttributes(mappingBundle));
-				List<SearchResultEntry> results = searchResult.getSearchEntries();
-				Log.i(TAG, "Found " + results.size() + " results for this contact (filter was "+emailFilter+")");
-				if(results.size() == 1) {
-					SearchResultEntry e = results.get(0);
-					DNs.add(e.getDN());
-					Log.i(TAG, "Found in directory: " + DATA1 + " (type=" + DATA2 + ", dn="+e.getDN()+")");
-				}
-				else {
-					Log.i(TAG, "Not found in directory: " + DATA1 + " (type=" + DATA2 + ")");
+			// we do the raw contact ID so we can force an aggregation later
+			for(final Entry<Long,ArrayList<String>> entry : emails.entrySet()) {
+				Long origin = entry.getKey();
+				
+				ArrayList<String> allAddr = entry.getValue();
+				Log.d(TAG, "fetchContacts: " + allAddr.size() +  " emails for account " + origin);
+				
+				
+				for(String addr : allAddr ) {
+					String emailFilter = "(&(mail="+addr+")"+searchFilter+")";
+					SearchResult searchResult = connection.search(baseDN, SearchScope.SUB, emailFilter, getUsedAttributes(mappingBundle));
+					List<SearchResultEntry> results = searchResult.getSearchEntries();
+					Log.i(TAG, "fetchContacts: Found " + results.size() + " results for this contact (filter was "+emailFilter+")");
+					if(results.size() == 1) {
+						SearchResultEntry e = results.get(0);
+						DNs.put(e.getDN(), origin);
+						Log.i(TAG, "fetchContacts: Found in directory: (from raw contact id "+origin+") " + addr + ", dn="+e.getDN()+")");
+					}
+					else {
+						Log.i(TAG, "fetchContacts: Not found in directory: " + addr + ")");
+					}
 				}
 			}
-			c1.close();
 
 
+			Log.i(TAG, "fetchContacts: Searching for " + DNs.size() + " DNs in the directory");
+			
+			for(final Entry<String,Long> entry : DNs.entrySet()) {
+				String dn = entry.getKey();
 
-			Log.i(TAG, "Searching for " + DNs.size() + " DNs in the directory");
-			for(String dn : DNs) { 
-
-				Log.i(TAG, "DN search base string: " + dn);
+				Log.i(TAG, "fetchContacts: DN search base string: " + dn);
 				SearchResult searchResult = connection.search(dn, SearchScope.BASE, searchFilter, getUsedAttributes(mappingBundle));
-				Log.i(TAG, searchResult.getEntryCount() + " entries returned for this DN.");
+				//Log.i(TAG, searchResult.getEntryCount() + " entries returned for this DN.");
 
 				for (SearchResultEntry e : searchResult.getSearchEntries()) {
 					Contact u = Contact.valueOf(e, mappingBundle);
 					if (u != null) {
-						friendList.add(u);
+						friendList.put(u, entry.getValue());
 					}
 				}
 			}

@@ -3,8 +3,7 @@ package org.mbs3.android.ufpb.syncadapter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
-
+import java.util.HashMap;
 import org.mbs3.android.ufpb.Constants;
 import org.mbs3.android.ufpb.authenticator.LDAPAuthenticatorActivity;
 import org.mbs3.android.ufpb.client.Contact;
@@ -52,7 +51,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 		Log.d(TAG, "Start the sync.");
 		
 		
-		List<Contact> users = new ArrayList<Contact>();
+		HashMap<Contact, Long> users = new HashMap<Contact, Long>();
 		String authtoken = null;
 		try {
 			// use the account manager to request the credentials
@@ -91,7 +90,10 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 			mappingBundle.putString(Contact.UFID, mAccountManager.getUserData(account, LDAPAuthenticatorActivity.PARAM_MAPPING + Contact.UFID));
 			mappingBundle.putString(Contact.PRIMARYAFFILIATION, mAccountManager.getUserData(account, LDAPAuthenticatorActivity.PARAM_MAPPING + Contact.PRIMARYAFFILIATION));
 			
-			users = LDAPUtilities.fetchContacts(ldapServer, baseDN, searchFilter, mappingBundle, mLastUpdated, this.getContext());
+			ContactManager cm = new ContactManager(l);
+			HashMap<Long, ArrayList<String>> emails = cm.getAllAccountEmailAddresses(mContext.getContentResolver(), account.name);
+			Log.d(TAG, "Now that I've found all emails, calling fetch for LDAP data");
+			users = LDAPUtilities.fetchContacts(ldapServer, emails, baseDN, searchFilter, mappingBundle, mLastUpdated, this.getContext());
 			
 			if (users == null) {
 				syncResult.stats.numIoExceptions++;
@@ -103,7 +105,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 			String msg = "Calling contactManager's sync contacts for " + account.name + " with " + users.size() + " users";
 			Log.d(TAG, msg);
 			l.d(msg);
-			ContactManager cm = new ContactManager(l);
+			
 			cm.syncContacts(mContext, account.name, users, syncResult);
 			l.stopLogging();
 		} catch (final AuthenticatorException e) {
