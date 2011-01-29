@@ -7,7 +7,7 @@ package org.mbs3.android.ufpb;
  */
 public class Constants {
 
-	public static final int DIALOG_RESYNC = 1;
+	
 	
 	public static final String ACCOUNT_NAME = "UF Phonebook Sync";
 	
@@ -27,4 +27,7 @@ public class Constants {
 	public static final String SDCARD_FOLDER = "/" + ACCOUNT_NAME.replace(" ", "");
 
 	public static final String PROFILE_MIME_TYPE = "vnd.android.cursor.item/vnd.org.mbs3.android.ufpb.profile";
+
+	public static final int DIALOG_RESYNC = 1;
+	public static final int DIALOG_APP_MAIN = 2;
 }

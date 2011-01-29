@@ -36,6 +36,17 @@
    			    android:resource="@xml/contacts" />
 		</service>
 		<activity
+			android:name="org.mbs3.android.ufpb.activity.ApplicationActivity"
+			android:label="@string/app_name"
+			android:excludeFromRecents="false">
+			<intent-filter>
+				<action android:name="android.intent.action.MAIN"/>
+				<category android:name="android.intent.category.LAUNCHER" />
+			</intent-filter>
+		</activity>
+		
+		
+		<activity
 			android:name="org.mbs3.android.ufpb.authenticator.LDAPAuthenticatorActivity"
 			android:label="@string/ui_activity_title"
 			android:excludeFromRecents="true">
