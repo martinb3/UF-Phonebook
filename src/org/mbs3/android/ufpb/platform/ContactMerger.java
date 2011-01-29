@@ -188,34 +188,42 @@ public class ContactMerger {
 		if(rawContactId != -1) {
 			String selection = Data.RAW_CONTACT_ID + "=? AND " + ContactsContract.Data.MIMETYPE + "=?";
 			
-			String msg = "Delete existing profile for raw contact "+rawContactId+", newC=" + newC;
+			String msg = "Updating existing profile for raw contact "+rawContactId+", newC=" + newC;
 			l.d(msg); Log.d(TAG,msg);
-			ops.add(ContentProviderOperation.newDelete(addCallerIsSyncAdapterFlag(Data.CONTENT_URI))
+			
+			ContentValues cv = new ContentValues();
+			
+			// first insert / create
+			cv.put(ContactsContract.Data.DATA1, dn);
+			cv.put(ContactsContract.Data.DATA2, Constants.ACCOUNT_NAME);
+			cv.put(ContactsContract.Data.DATA3, "Click to view entry");
+			cv.put(ContactsContract.Data.DATA4, newC.getUfid());
+			
+			
+			ops.add(ContentProviderOperation.newUpdate(addCallerIsSyncAdapterFlag(Data.CONTENT_URI))
 				.withSelection(selection, new String[] { rawContactId + "",  Constants.PROFILE_MIME_TYPE})
+				.withValues(cv)
 				.build()
 				);
 		}
 		else {
-			String msg = "Didn't delete existing profile for raw contact "+rawContactId+", dn=" + dn;
+			String msg = "Create new profile for raw contact "+rawContactId+", newC=" + newC;
+			l.d(msg);
+			Log.d(TAG , msg);
+			ContentValues cv = new ContentValues();
+			
+			// first insert / create
+			cv.put(ContactsContract.Data.MIMETYPE, Constants.PROFILE_MIME_TYPE);
+			cv.put(ContactsContract.Data.DATA1, dn);
+			cv.put(ContactsContract.Data.DATA2, Constants.ACCOUNT_NAME);
+			cv.put(ContactsContract.Data.DATA3, "Click to view entry");
+			cv.put(ContactsContract.Data.DATA4, newC.getUfid());
+			
+			Builder insertOp = createInsert(rawContactId, cv);
+			ops.add(insertOp.build());
+			
 			l.d(msg); Log.d(TAG,msg);
 		}
-		
-		// then insert a new profile
-		
-		String msg = "Create new profile for raw contact "+rawContactId+", newC=" + newC;
-		l.d(msg);
-		Log.d(TAG , msg);
-		ContentValues cv = new ContentValues();
-		
-		// first insert / create
-		cv.put(ContactsContract.Data.MIMETYPE, Constants.PROFILE_MIME_TYPE);
-		cv.put(ContactsContract.Data.DATA1, dn);
-		cv.put(ContactsContract.Data.DATA2, Constants.ACCOUNT_NAME);
-		cv.put(ContactsContract.Data.DATA3, "Click to view entry");
-		cv.put(ContactsContract.Data.DATA4, newC.getUfid());
-		
-		Builder insertOp = createInsert(rawContactId, cv);
-		ops.add(insertOp.build());
 	}
 
 	public void updateAddress(int adressType) {

@@ -372,24 +372,6 @@ public class ContactManager {
 			emailCursor.close();
 		}
 		accountCursor.close();
-		Log.d(TAG, "getAllAccountEmailAddresses: Found " + accountCursor.getCount() + " accounts when looking for email addresses that aren't part of account " + exceptAccountName);
-		
-		Cursor accountCursor2 = resolver.query(RawContacts.CONTENT_URI, 
-				new String[]{RawContacts._ID, RawContacts.ACCOUNT_NAME, RawContacts.ACCOUNT_TYPE, RawContacts.SOURCE_ID},
-				null,
-				null,
-				null);
-		while(accountCursor2.moveToNext()) {
-			Log.d(TAG, "Dumping _all_ accounts: Contact ID / Name / Type / Source ");
-			
-			Long id = accountCursor2.getLong(accountCursor2.getColumnIndex(RawContacts._ID));
-			String Name = accountCursor2.getString(accountCursor2.getColumnIndex(RawContacts.ACCOUNT_NAME));
-			String Type = accountCursor2.getString(accountCursor2.getColumnIndex(RawContacts.ACCOUNT_TYPE));
-			String Source = accountCursor2.getString(accountCursor2.getColumnIndex(RawContacts.SOURCE_ID));
-			
-			Log.d(TAG, "Dumping _all_ accounts: "+id+" / "+Name+" / "+Type+" / " + Source);
-		}
-		accountCursor2.close();
 		return addrs;
 	}
 	
