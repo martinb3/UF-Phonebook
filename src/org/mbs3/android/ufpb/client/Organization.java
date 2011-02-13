@@ -1,8 +1,10 @@
 package org.mbs3.android.ufpb.client;
 
+import java.io.Serializable;
+
 import android.text.TextUtils;
 
-public class Organization {
+public class Organization implements Serializable {
 	
 	private String officelocation = "";
 	private String company = "";

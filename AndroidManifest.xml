@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-	package="org.mbs3.android.ufpb" android:versionCode="4" android:versionName="1.1">
+	package="org.mbs3.android.ufpb" android:versionCode="5" android:versionName="1.2">
 	<uses-permission android:name="android.permission.GET_ACCOUNTS" />
 	<uses-permission android:name="android.permission.USE_CREDENTIALS" />
 	<uses-permission android:name="android.permission.MANAGE_ACCOUNTS" />
@@ -43,8 +43,14 @@
 				<action android:name="android.intent.action.MAIN"/>
 				<category android:name="android.intent.category.LAUNCHER" />
 			</intent-filter>
+			
+			<intent-filter>
+			    <action android:name="android.intent.action.SEARCH" />
+        	</intent-filter>
+     		<meta-data android:name="android.app.searchable"
+         	    android:resource="@xml/searchable"/>
+			
 		</activity>
-		
 		
 		<activity
 			android:name="org.mbs3.android.ufpb.authenticator.LDAPAuthenticatorActivity"
@@ -55,7 +61,7 @@
 				someone who explicitly knows the class name
 			-->
 		</activity>
-		<activity android:name="org.mbs3.android.ufpb.activity.Profile" android:label="@string/profile_label"
+		<activity android:name="org.mbs3.android.ufpb.activity.ProfileActivity" android:label="@string/profile_label"
 			android:theme="@android:style/Theme.NoTitleBar"
 			>
 			<intent-filter>

@@ -84,12 +84,20 @@
 				android:padding="3dip" android:gravity="left" android:layout_width="wrap_content"
 				android:layout_height="wrap_content" android:id="@+id/profile_text_staffinfo" />
 
-			<Button android:layout_column="1" android:layout_span="2"
+			<Button android:layout_column="1" android:layout_span="1"
 				android:text="View on phonebook.ufl.edu" style="@android:style/TextAppearance.Medium"
 				android:ellipsize="marquee" android:padding="3dip" android:gravity="center"
 				android:layout_width="fill_parent" android:layout_height="wrap_content"
 				android:id="@+id/profile_button_webview" android:textColor="#000000"
 				android:clickable="true" />
+				
+			<Button android:layout_column="1" android:layout_span="1"
+				android:text="Add to local contacts" style="@android:style/TextAppearance.Medium"
+				android:ellipsize="marquee" android:padding="3dip" android:gravity="center"
+				android:layout_width="fill_parent" android:layout_height="wrap_content"
+				android:id="@+id/profile_button_addcontact" android:textColor="#000000"
+				android:clickable="true" />
+				
 		</LinearLayout>
 	</ScrollView>
 

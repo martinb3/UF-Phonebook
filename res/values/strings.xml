@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+	<!-- Make 'label' have more spaces so we can get wrapping -->
 	<string name="label">UF Phonebook Sync</string>
-	<string name="app_name">UF Phonebook Sync</string>
+	<string name="app_name">UF Phone Book</string>
+
+	<string name="search_activity_account">To sync your existing contacts with the UF Phonebook, you must add an account of type "UF Phonebook Sync." Press OK to be taken to the accounts screen now.</string>
+	<string name="search_activity_search">Press your device\'s search button to begin searching for contacts.</string>
+	<string name="search_activity_hint">Enter a name, email address, or GatorLink ID to find people.</string>
 
 	<!-- AuthenticatorActivity -->
 	<skip />

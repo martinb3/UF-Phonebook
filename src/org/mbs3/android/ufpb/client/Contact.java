@@ -1,6 +1,7 @@
 package org.mbs3.android.ufpb.client;
 
 import java.io.ByteArrayOutputStream;
+import java.io.Serializable;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -19,7 +20,7 @@ import com.unboundid.ldap.sdk.ReadOnlyEntry;
  * title: IT Expert
  * 
  */
-public class Contact {
+public class Contact implements Serializable {
 	public static String DISPLAYNAME = "DISPLAYNAME";
 	public static String FIRSTNAME = "FIRSTNAME";
 	public static String LASTNAME = "LASTNAME";

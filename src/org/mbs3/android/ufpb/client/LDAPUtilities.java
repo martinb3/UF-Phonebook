@@ -3,6 +3,7 @@ package org.mbs3.android.ufpb.client;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
 
@@ -155,7 +156,7 @@ public class LDAPUtilities {
 			Log.v(TAG, "LDAPException on fetching contacts", e);
 			NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 			int icon = R.drawable.icon;
-			CharSequence tickerText = "Error on LDAP Sync";
+			CharSequence tickerText = "Error on " + org.mbs3.android.ufpb.Constants.ACCOUNT_NAME;
 			Notification notification = new Notification(icon, tickerText, System.currentTimeMillis());
 			Intent notificationIntent = new Intent(context, SyncService.class);
 			PendingIntent contentIntent = PendingIntent.getService(context, 0, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
@@ -238,5 +239,82 @@ public class LDAPUtilities {
 			}
 		}
 		return false;
+	}
+
+	/**
+	 * Obtains a list of all contacts from the LDAP Server.
+	 * 
+	 * @param ldapServer
+	 *            The LDAP server data
+	 * @param baseDN
+	 *            The baseDN that will be used for the search
+	 * @param searchFilter
+	 *            The search filter
+	 * @param mappingBundle
+	 *            A bundle of all LDAP attributes that are queried
+	 * @param mLastUpdated
+	 *            Date of the last update
+	 * @param context
+	 *            The caller Activity's context
+	 * @return List of all LDAP contacts
+	 */
+	public static HashSet<Contact> searchContacts(final LDAPServerInstance ldapServer, final String searchTerms, final String baseDN, final String searchFilter, final Bundle mappingBundle, final Context context) {
+
+		//Feb 12 14:30:04 dir8 slapd[11475]: conn=1099868 op=1 SRCH base="ou=People,dc=ufl,dc=edu" scope=2 deref=2 filter="(&(|(cn=foo*)(sn=foo*)(uid=foo)(mail=foo@*))(&(!(eduPersonPrimaryAffiliation=affiliate))(!(eduPersonPrimaryAffiliation=-*-))))"
+
+		
+		final HashSet<String> DNs = new HashSet<String>();
+		final HashSet<Contact> friendList = new HashSet<Contact>();
+		
+		Log.d(TAG, "searchContacts: " + searchTerms +  " terms");
+		
+		LDAPConnection connection = null;
+		try {
+			connection = ldapServer.getConnection();
+			String emailFilter = "(&(&(|(cn="+searchTerms+"*)(sn="+searchTerms+"*)(uid="+searchTerms+")(mail="+searchTerms+"@*))(&(!(eduPersonPrimaryAffiliation=affiliate))(!(eduPersonPrimaryAffiliation=-*-))))"+searchFilter+")";
+			SearchResult searchResult1 = connection.search(baseDN, SearchScope.SUB, emailFilter, "dn");
+			List<SearchResultEntry> results = searchResult1.getSearchEntries();
+			Log.i(TAG, "fetchContacts: Found " + results.size() + " results for this contact (filter was "+emailFilter+")");
+
+			// don't get more than 50 DNs
+			for(int i = 0; i < results.size() && i < 50; i++) {
+				SearchResultEntry result = results.get(i);
+				DNs.add(result.getDN());
+				Log.i(TAG, "fetchContacts: Found in directory: dn="+result.getDN()+")");
+			}
+	
+			Log.i(TAG, "fetchContacts: Searching for " + DNs.size() + " DNs in the directory");
+			for(final String dn : DNs) {
+	
+				Log.i(TAG, "fetchContacts: DN search base string: " + dn);
+				SearchResult searchResult2 = connection.search(dn, SearchScope.BASE, searchFilter, getUsedAttributes(mappingBundle));
+				//Log.i(TAG, searchResult.getEntryCount() + " entries returned for this DN.");
+	
+				for (SearchResultEntry e : searchResult2.getSearchEntries()) {
+					Contact u = Contact.valueOf(e, mappingBundle);
+					if (u != null) {
+						friendList.add(u);
+					}
+				}
+			}
+		} catch (LDAPException e) {
+			Log.v(TAG, "LDAPException on fetching contacts", e);
+			NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+			int icon = R.drawable.icon;
+			CharSequence tickerText = "Error on " + org.mbs3.android.ufpb.Constants.ACCOUNT_NAME;
+			Notification notification = new Notification(icon, tickerText, System.currentTimeMillis());
+			Intent notificationIntent = new Intent(context, SyncService.class);
+			PendingIntent contentIntent = PendingIntent.getService(context, 0, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+			notification.setLatestEventInfo(context, tickerText, e.getMessage().replace("\\n", " "), contentIntent);
+			notification.flags = Notification.FLAG_AUTO_CANCEL;
+			mNotificationManager.notify(0, notification);
+			return null;
+		} finally {
+			if (connection != null) {
+				connection.close();
+			}
+		}
+	
+		return friendList;
 	}
 }

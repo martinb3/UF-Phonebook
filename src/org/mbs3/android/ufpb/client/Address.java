@@ -1,5 +1,7 @@
 package org.mbs3.android.ufpb.client;
 
+import java.io.Serializable;
+
 import android.text.TextUtils;
 
 /**
@@ -7,7 +9,7 @@ import android.text.TextUtils;
  * 
  * @author <a href="mailto:daniel.weisser@gmx.de">Daniel Weisser</a>
  */
-public class Address {
+public class Address implements Serializable {
 
 	@Override
 	public String toString() {

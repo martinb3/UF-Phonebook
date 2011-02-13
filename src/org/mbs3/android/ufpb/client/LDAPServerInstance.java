@@ -104,7 +104,7 @@ public final class LDAPServerInstance implements Serializable {
 		options.setConnectTimeoutMillis(30000);
 		options.setFollowReferrals(false);
 		options.setMaxMessageSize(0);
-
+		
 		final LDAPConnection conn = new LDAPConnection(socketFactory, options, host, port);
 
 		if (usesStartTLS()) {

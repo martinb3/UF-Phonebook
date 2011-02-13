@@ -30,4 +30,7 @@ public class Constants {
 
 	public static final int DIALOG_RESYNC = 1;
 	public static final int DIALOG_APP_MAIN = 2;
+	public static final int DIALOG_ADD_CONTACT = 3;
+	
+	public static final String CUSTOM_CONTACT_DATA="org.mbs3.android.ufpb.CUSTOM_CONTACT_DATA";
 }
