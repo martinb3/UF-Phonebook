@@ -1,12 +1,28 @@
+/*
+ * Copyright 2010 Daniel Weisser
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.mbs3.android.ufpb.authenticator;
 
 import org.mbs3.android.ufpb.Constants;
+
 import org.mbs3.android.ufpb.R;
 import org.mbs3.android.ufpb.client.Contact;
 import org.mbs3.android.ufpb.client.LDAPServerInstance;
 import org.mbs3.android.ufpb.client.LDAPUtilities;
 import org.mbs3.android.ufpb.platform.ContactManager;
-
 import android.accounts.Account;
 import android.accounts.AccountAuthenticatorActivity;
 import android.accounts.AccountManager;
@@ -22,6 +38,7 @@ import android.provider.ContactsContract;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
@@ -133,7 +150,6 @@ public class LDAPAuthenticatorActivity extends AccountAuthenticatorActivity {
 	@Override
 	public void onCreate(Bundle bundle) {
 		super.onCreate(bundle);
-		
 		mAccountManager = AccountManager.get(this);
 
 		getDataFromIntent();
@@ -149,6 +165,11 @@ public class LDAPAuthenticatorActivity extends AccountAuthenticatorActivity {
 		mEncryptionSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 				mEncryption = position;
+				if (position == 1) {
+					mPortEdit.setText("636");
+				} else {
+					mPortEdit.setText("389");
+				}
 			}
 
 			public void onNothingSelected(AdapterView<?> arg0) {
