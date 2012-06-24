@@ -37,6 +37,10 @@ import com.unboundid.ldap.sdk.ReadOnlyEntry;
  * 
  */
 public class Contact implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -4501191062872483458L;
 	public static String DISPLAYNAME = "DISPLAYNAME";
 	public static String FIRSTNAME = "FIRSTNAME";
 	public static String LASTNAME = "LASTNAME";

@@ -6,6 +6,10 @@ import android.text.TextUtils;
 
 public class Organization implements Serializable {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -7027496788077299135L;
 	private String officelocation = "";
 	private String company = "";
 	private String title = "";

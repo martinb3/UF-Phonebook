@@ -44,7 +44,6 @@ import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.ViewFlipper;
-import android.widget.AdapterView.OnItemSelectedListener;
 
 /**
  * Activity which displays login screen to the user.

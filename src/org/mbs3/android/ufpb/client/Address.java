@@ -26,6 +26,11 @@ import android.text.TextUtils;
  */
 public class Address implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -234485713467741993L;
+
 	@Override
 	public String toString() {
 		return "Address [street=" + street + ", city=" + city + ", state=" + state + ", zip=" + zip + ", country=" + country + "]";
