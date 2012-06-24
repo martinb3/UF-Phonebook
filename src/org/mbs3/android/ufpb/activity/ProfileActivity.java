@@ -195,7 +195,6 @@ public class ProfileActivity extends Activity implements OnClickListener {
 			return result;
 	}
 
-	@Override
 	public void onClick(View v) {
 		Log.i(TAG, "Button click received");
 		if(currentContact == null || currentContact.getUfid() == null || currentContact.getUfid().equals(""))

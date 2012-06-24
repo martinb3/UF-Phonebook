@@ -147,14 +147,12 @@ public class LDAPAuthenticatorActivity extends AccountAuthenticatorActivity {
 		mEncryptionSpinner.setAdapter(adapter);
 		mEncryptionSpinner.setSelection(mEncryption);
 		mEncryptionSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
-			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 				mEncryption = position;
 			}
 
-			@Override
-			public void onNothingSelected(AdapterView<?> parent) {
-				// Do nothing.
+			public void onNothingSelected(AdapterView<?> arg0) {
+				// TODO Auto-generated method stub
 			}
 		});
 
