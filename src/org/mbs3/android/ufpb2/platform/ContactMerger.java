@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package org.mbs3.android.ufpb.platform;
+package org.mbs3.android.ufpb2.platform;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import org.mbs3.android.ufpb.Constants;
-import org.mbs3.android.ufpb.client.Contact;
-import org.mbs3.android.ufpb.syncadapter.Logger;
+import org.mbs3.android.ufpb2.Constants;
+import org.mbs3.android.ufpb2.client.Contact;
+import org.mbs3.android.ufpb2.syncadapter.Logger;
 
 import android.content.ContentProviderOperation;
 import android.content.ContentValues;
@@ -253,7 +253,7 @@ public class ContactMerger {
 		}
 	}
 	
-	private void updateAddress(org.mbs3.android.ufpb.client.Address newAddress, org.mbs3.android.ufpb.client.Address existingAddress, int adressType) {
+	private void updateAddress(org.mbs3.android.ufpb2.client.Address newAddress, org.mbs3.android.ufpb2.client.Address existingAddress, int adressType) {
 		final String selection = Data.RAW_CONTACT_ID + "=? AND " + Data.MIMETYPE + "=? AND " + StructuredPostal.TYPE + "=?";
 		if ((newAddress == null || newAddress.isEmpty()) && existingAddress != null) {
 			l.d("Delete address " + adressType + "(" + existingC.getFirstName() + " " + existingC.getLastName() + "), " + newAddress);
@@ -285,7 +285,7 @@ public class ContactMerger {
 		}
 	}
 
-	public void updateOrganization(org.mbs3.android.ufpb.client.Organization newOrg, org.mbs3.android.ufpb.client.Organization existingOrg, int orgType) {
+	public void updateOrganization(org.mbs3.android.ufpb2.client.Organization newOrg, org.mbs3.android.ufpb2.client.Organization existingOrg, int orgType) {
 		final String selection = Data.RAW_CONTACT_ID + "=? AND " + Data.MIMETYPE + "=? AND " + Organization.TYPE + "=?";
 		if ((newOrg == null || newOrg.isEmpty()) && existingOrg != null) {
 			l.d("Delete organization " + orgType + "(" + existingC.getFirstName() + " " + existingC.getLastName() + "), " + newOrg);

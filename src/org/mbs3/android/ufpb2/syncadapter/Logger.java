@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.mbs3.android.ufpb.syncadapter;
+package org.mbs3.android.ufpb2.syncadapter;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -25,7 +25,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
-import org.mbs3.android.ufpb.Constants;
+import org.mbs3.android.ufpb2.Constants;
 
 import android.os.Environment;
 import android.util.Log;

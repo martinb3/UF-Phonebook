@@ -14,15 +14,16 @@
  * limitations under the License.
  */
 
-package org.mbs3.android.ufpb.authenticator;
+package org.mbs3.android.ufpb2.authenticator;
 
-import org.mbs3.android.ufpb.Constants;
 
-import org.mbs3.android.ufpb.R;
-import org.mbs3.android.ufpb.client.Contact;
-import org.mbs3.android.ufpb.client.LDAPServerInstance;
-import org.mbs3.android.ufpb.client.LDAPUtilities;
-import org.mbs3.android.ufpb.platform.ContactManager;
+import org.mbs3.android.ufpb2.R;
+import org.mbs3.android.ufpb2.Constants;
+import org.mbs3.android.ufpb2.client.Contact;
+import org.mbs3.android.ufpb2.client.LDAPServerInstance;
+import org.mbs3.android.ufpb2.client.LDAPUtilities;
+import org.mbs3.android.ufpb2.platform.ContactManager;
+
 import android.accounts.Account;
 import android.accounts.AccountAuthenticatorActivity;
 import android.accounts.AccountManager;

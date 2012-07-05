@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-package org.mbs3.android.ufpb.platform;
+package org.mbs3.android.ufpb2.platform;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
-import org.mbs3.android.ufpb.Constants;
-import org.mbs3.android.ufpb.client.Address;
-import org.mbs3.android.ufpb.client.Contact;
-import org.mbs3.android.ufpb.syncadapter.Logger;
+import org.mbs3.android.ufpb2.Constants;
+import org.mbs3.android.ufpb2.client.Address;
+import org.mbs3.android.ufpb2.client.Contact;
+import org.mbs3.android.ufpb2.syncadapter.Logger;
 
 import android.content.ContentProviderClient;
 import android.content.ContentProviderOperation;
@@ -161,7 +161,7 @@ public class ContactManager {
 					}
 				} else if (mimetype.equals(Organization.CONTENT_ITEM_TYPE)) { //organization
 					int type = c.getInt(c.getColumnIndex(Data.DATA2));
-					org.mbs3.android.ufpb.client.Organization org = new org.mbs3.android.ufpb.client.Organization();
+					org.mbs3.android.ufpb2.client.Organization org = new org.mbs3.android.ufpb2.client.Organization();
 					org.setTitle(c.getString(c.getColumnIndex(Data.DATA4)));
 					org.setCompany(c.getString(c.getColumnIndex(Data.DATA1)));
 					org.setOfficeLocation(c.getString(c.getColumnIndex(Data.DATA9)));

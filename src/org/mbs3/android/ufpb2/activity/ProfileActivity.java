@@ -1,12 +1,12 @@
-package org.mbs3.android.ufpb.activity;
+package org.mbs3.android.ufpb2.activity;
 
-import org.mbs3.android.ufpb.Constants;
-import org.mbs3.android.ufpb.R;
-import org.mbs3.android.ufpb.client.Address;
-import org.mbs3.android.ufpb.client.Contact;
-import org.mbs3.android.ufpb.client.Organization;
-import org.mbs3.android.ufpb.platform.ContactManager;
-import org.mbs3.android.ufpb.syncadapter.Logger;
+import org.mbs3.android.ufpb2.R;
+import org.mbs3.android.ufpb2.Constants;
+import org.mbs3.android.ufpb2.client.Address;
+import org.mbs3.android.ufpb2.client.Contact;
+import org.mbs3.android.ufpb2.client.Organization;
+import org.mbs3.android.ufpb2.platform.ContactManager;
+import org.mbs3.android.ufpb2.syncadapter.Logger;
 
 import android.app.Activity;
 import android.app.AlertDialog;

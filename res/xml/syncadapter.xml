@@ -17,6 +17,6 @@
 
 <sync-adapter xmlns:android="http://schemas.android.com/apk/res/android"
     android:contentAuthority="com.android.contacts"
-    android:accountType="org.mbs3.android.ufpb"
+    android:accountType="org.mbs3.android.ufpb2"
     android:supportsUploading="false"
 />

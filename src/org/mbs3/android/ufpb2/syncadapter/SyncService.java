@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.mbs3.android.ufpb.syncadapter;
+package org.mbs3.android.ufpb2.syncadapter;
 
 import android.app.Service;
 import android.content.Intent;

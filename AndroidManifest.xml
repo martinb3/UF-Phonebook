@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-	package="org.mbs3.android.ufpb" android:versionCode="5" android:versionName="1.2">
+	package="org.mbs3.android.ufpb2" android:versionCode="5" android:versionName="1.2">
 	<uses-permission android:name="android.permission.GET_ACCOUNTS" />
 	<uses-permission android:name="android.permission.USE_CREDENTIALS" />
 	<uses-permission android:name="android.permission.MANAGE_ACCOUNTS" />
@@ -17,7 +17,7 @@
 	
 	<application android:icon="@drawable/icon" android:label="@string/app_name" android:debuggable="false">
 		<service
-			android:name="org.mbs3.android.ufpb.authenticator.LDAPAuthenticationService"
+			android:name="org.mbs3.android.ufpb2.authenticator.LDAPAuthenticationService"
 			android:exported="true">
 			<intent-filter>
 				<action android:name="android.accounts.AccountAuthenticator" />
@@ -25,7 +25,7 @@
 			<meta-data android:name="android.accounts.AccountAuthenticator"
 				android:resource="@xml/authenticator" />
 		</service>
-		<service android:name="org.mbs3.android.ufpb.syncadapter.SyncService"
+		<service android:name="org.mbs3.android.ufpb2.syncadapter.SyncService"
 			android:exported="true">
 			<intent-filter>
 				<action android:name="android.content.SyncAdapter" />
@@ -36,7 +36,7 @@
    			    android:resource="@xml/contacts" />
 		</service>
 		<activity
-			android:name="org.mbs3.android.ufpb.activity.ApplicationActivity"
+			android:name="org.mbs3.android.ufpb2.activity.ApplicationActivity"
 			android:label="@string/app_name"
 			android:excludeFromRecents="false">
 			<intent-filter>
@@ -53,7 +53,7 @@
 		</activity>
 		
 		<activity
-			android:name="org.mbs3.android.ufpb.authenticator.LDAPAuthenticatorActivity"
+			android:name="org.mbs3.android.ufpb2.authenticator.LDAPAuthenticatorActivity"
 			android:label="@string/ui_activity_title"
 			android:excludeFromRecents="true">
 			<!--
@@ -61,13 +61,13 @@
 				someone who explicitly knows the class name
 			-->
 		</activity>
-		<activity android:name="org.mbs3.android.ufpb.activity.ProfileActivity" android:label="@string/profile_label"
+		<activity android:name="org.mbs3.android.ufpb2.activity.ProfileActivity" android:label="@string/profile_label"
 			android:theme="@android:style/Theme.NoTitleBar"
 			>
 			<intent-filter>
 				<action android:name="android.intent.action.VIEW" />
 				<category android:name="android.intent.category.DEFAULT" />
-				<data android:mimeType="vnd.android.cursor.item/vnd.org.mbs3.android.ufpb.profile" />
+				<data android:mimeType="vnd.android.cursor.item/vnd.org.mbs3.android.ufpb2.profile" />
 			</intent-filter>
 		</activity>
 		

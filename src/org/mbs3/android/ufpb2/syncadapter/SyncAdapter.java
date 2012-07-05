@@ -14,18 +14,19 @@
  * limitations under the License.
  */
 
-package org.mbs3.android.ufpb.syncadapter;
+package org.mbs3.android.ufpb2.syncadapter;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import org.mbs3.android.ufpb.Constants;
-import org.mbs3.android.ufpb.authenticator.LDAPAuthenticatorActivity;
-import org.mbs3.android.ufpb.client.Contact;
-import org.mbs3.android.ufpb.client.LDAPServerInstance;
-import org.mbs3.android.ufpb.client.LDAPUtilities;
-import org.mbs3.android.ufpb.platform.ContactManager;
+
+import org.mbs3.android.ufpb2.Constants;
+import org.mbs3.android.ufpb2.authenticator.LDAPAuthenticatorActivity;
+import org.mbs3.android.ufpb2.client.Contact;
+import org.mbs3.android.ufpb2.client.LDAPServerInstance;
+import org.mbs3.android.ufpb2.client.LDAPUtilities;
+import org.mbs3.android.ufpb2.platform.ContactManager;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;

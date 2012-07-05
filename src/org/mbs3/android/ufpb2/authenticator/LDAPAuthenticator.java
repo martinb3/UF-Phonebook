@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-package org.mbs3.android.ufpb.authenticator;
+package org.mbs3.android.ufpb2.authenticator;
 
-import org.mbs3.android.ufpb.Constants;
-import org.mbs3.android.ufpb.client.LDAPServerInstance;
-import org.mbs3.android.ufpb.client.LDAPUtilities;
+import org.mbs3.android.ufpb2.Constants;
+import org.mbs3.android.ufpb2.client.LDAPServerInstance;
+import org.mbs3.android.ufpb2.client.LDAPUtilities;
+
 import android.accounts.AbstractAccountAuthenticator;
 import android.accounts.Account;
 import android.accounts.AccountAuthenticatorResponse;
@@ -29,7 +30,7 @@ import android.os.Bundle;
 import android.util.Log;
 
 /**
- * This class is an implementation of AbstractAccountAuthenticator for authenticating accounts in the org.mbs3.android.ufpb domain.
+ * This class is an implementation of AbstractAccountAuthenticator for authenticating accounts in the org.mbs3.android.ufpb2 domain.
  * 
  * @author <a href="mailto:daniel.weisser@gmx.de">Daniel Weisser</a>
  */

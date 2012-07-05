@@ -1,8 +1,9 @@
-package org.mbs3.android.ufpb;
+package org.mbs3.android.ufpb2;
 
 import java.util.List;
 
-import org.mbs3.android.ufpb.client.Contact;
+import org.mbs3.android.ufpb2.R;
+import org.mbs3.android.ufpb2.client.Contact;
 
 import android.content.Context;
 import android.view.LayoutInflater;

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.mbs3.android.ufpb.client;
+package org.mbs3.android.ufpb2.client;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -23,9 +23,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
 
-import org.mbs3.android.ufpb.R;
-import org.mbs3.android.ufpb.authenticator.LDAPAuthenticatorActivity;
-import org.mbs3.android.ufpb.syncadapter.SyncService;
+import org.mbs3.android.ufpb2.R;
+import org.mbs3.android.ufpb2.authenticator.LDAPAuthenticatorActivity;
+import org.mbs3.android.ufpb2.syncadapter.SyncService;
 
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -172,7 +172,7 @@ public class LDAPUtilities {
 			Log.v(TAG, "LDAPException on fetching contacts", e);
 			NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 			int icon = R.drawable.icon;
-			CharSequence tickerText = "Error on " + org.mbs3.android.ufpb.Constants.ACCOUNT_NAME;
+			CharSequence tickerText = "Error on " + org.mbs3.android.ufpb2.Constants.ACCOUNT_NAME;
 			Notification notification = new Notification(icon, tickerText, System.currentTimeMillis());
 			Intent notificationIntent = new Intent(context, SyncService.class);
 			PendingIntent contentIntent = PendingIntent.getService(context, 0, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
@@ -317,7 +317,7 @@ public class LDAPUtilities {
 			Log.v(TAG, "LDAPException on fetching contacts", e);
 			NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 			int icon = R.drawable.icon;
-			CharSequence tickerText = "Error on " + org.mbs3.android.ufpb.Constants.ACCOUNT_NAME;
+			CharSequence tickerText = "Error on " + org.mbs3.android.ufpb2.Constants.ACCOUNT_NAME;
 			Notification notification = new Notification(icon, tickerText, System.currentTimeMillis());
 			Intent notificationIntent = new Intent(context, SyncService.class);
 			PendingIntent contentIntent = PendingIntent.getService(context, 0, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.mbs3.android.ufpb.authenticator;
+package org.mbs3.android.ufpb2.authenticator;
 
 import android.app.Service;
 import android.content.Intent;

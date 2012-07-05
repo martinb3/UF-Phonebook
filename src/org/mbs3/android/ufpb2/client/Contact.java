@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.mbs3.android.ufpb.client;
+package org.mbs3.android.ufpb2.client;
 
 import java.io.ByteArrayOutputStream;
 import java.io.Serializable;

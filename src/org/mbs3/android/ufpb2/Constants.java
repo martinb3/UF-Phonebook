@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.mbs3.android.ufpb;
+package org.mbs3.android.ufpb2;
 
 /**
  * Constants for the LDAP sync adapter.
@@ -30,12 +30,12 @@ public class Constants {
 	/**
 	 * Account type string.
 	 */
-	public static final String ACCOUNT_TYPE = "org.mbs3.android.ufpb";
+	public static final String ACCOUNT_TYPE = "org.mbs3.android.ufpb2";
 
 	/**
 	 * Authtoken type string.
 	 */
-	public static final String AUTHTOKEN_TYPE = "org.mbs3.android.ufpb";
+	public static final String AUTHTOKEN_TYPE = "org.mbs3.android.ufpb2";
 
 	/**
 	 * SD card LDAPSync folder.
@@ -48,5 +48,5 @@ public class Constants {
 	public static final int DIALOG_APP_MAIN = 2;
 	public static final int DIALOG_ADD_CONTACT = 3;
 	
-	public static final String CUSTOM_CONTACT_DATA="org.mbs3.android.ufpb.CUSTOM_CONTACT_DATA";
+	public static final String CUSTOM_CONTACT_DATA="org.mbs3.android.ufpb2.CUSTOM_CONTACT_DATA";
 }

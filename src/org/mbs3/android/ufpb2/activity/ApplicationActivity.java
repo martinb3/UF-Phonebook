@@ -1,16 +1,17 @@
-package org.mbs3.android.ufpb.activity;
+package org.mbs3.android.ufpb2.activity;
 
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.HashSet;
 
-import org.mbs3.android.ufpb.Constants;
-import org.mbs3.android.ufpb.ContactListAdapter;
-import org.mbs3.android.ufpb.R;
-import org.mbs3.android.ufpb.authenticator.LDAPAuthenticatorActivity;
-import org.mbs3.android.ufpb.client.Contact;
-import org.mbs3.android.ufpb.client.LDAPServerInstance;
-import org.mbs3.android.ufpb.client.LDAPUtilities;
+import org.mbs3.android.ufpb2.R;
+import org.mbs3.android.ufpb2.Constants;
+import org.mbs3.android.ufpb2.ContactListAdapter;
+import org.mbs3.android.ufpb2.authenticator.LDAPAuthenticatorActivity;
+import org.mbs3.android.ufpb2.client.Contact;
+import org.mbs3.android.ufpb2.client.LDAPServerInstance;
+import org.mbs3.android.ufpb2.client.LDAPUtilities;
+
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.Settings;

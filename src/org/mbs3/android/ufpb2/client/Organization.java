@@ -1,4 +1,4 @@
-package org.mbs3.android.ufpb.client;
+package org.mbs3.android.ufpb2.client;
 
 import java.io.Serializable;
 
