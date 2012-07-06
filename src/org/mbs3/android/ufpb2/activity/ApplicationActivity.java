@@ -92,6 +92,11 @@ public class ApplicationActivity extends ListActivity {
 		
 		Log.i(TAG, "List item clicked: " + c);
 		//super.onListItemClick(l, v, position, id);
+		
+		/*test for preferences
+		 * startActivity(new Intent(getBaseContext(),PreferenceActivity.class));
+		if(true)
+		return;*/
 
 		Intent intent = new Intent(Intent.ACTION_VIEW);
 		intent.putExtra(Constants.CUSTOM_CONTACT_DATA, (Serializable)c);

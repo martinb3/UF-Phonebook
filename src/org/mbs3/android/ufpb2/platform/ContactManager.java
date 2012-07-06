@@ -62,6 +62,10 @@ public class ContactManager {
 	private static final String TAG = "ContactManager";
 	private Logger l;
 
+	public ContactManager() {
+		this(new Logger());
+	}
+	
 	public ContactManager(Logger l) {
 		this.l = l;
 	}

@@ -6,7 +6,6 @@ import org.mbs3.android.ufpb2.client.Address;
 import org.mbs3.android.ufpb2.client.Contact;
 import org.mbs3.android.ufpb2.client.Organization;
 import org.mbs3.android.ufpb2.platform.ContactManager;
-import org.mbs3.android.ufpb2.syncadapter.Logger;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -56,7 +55,7 @@ public class ProfileActivity extends Activity implements OnClickListener {
 				Log.i(TAG, "DATA3: " + cursor.getString(cursor.getColumnIndex("DATA3")));
 				Log.i(TAG, "DATA4: " + cursor.getString(cursor.getColumnIndex("DATA4")));
 				
-				ContactManager cm = new ContactManager(new Logger());
+				ContactManager cm = new ContactManager();
 				String ufid = cursor.getString(cursor.getColumnIndex("DATA4"));
 				
 				String dn = cursor.getString(cursor.getColumnIndex("DATA1"));

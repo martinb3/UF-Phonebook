@@ -62,7 +62,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 	@Override
 	public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult syncResult) {
 		Logger l = new Logger();
-		l.startLogging();
+		l.startLogging(mContext);
 		
 		l.d("Start the sync");
 		Log.d(TAG, "Start the sync.");
@@ -134,5 +134,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 			Log.e(TAG, "IOException", e);
 			syncResult.stats.numIoExceptions++;
 		}
+		
+		try { l.stopLogging(); } catch (Throwable t) {} // swallow
 	}
 }

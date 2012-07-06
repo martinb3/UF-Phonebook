@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-	package="org.mbs3.android.ufpb2" android:versionCode="5" android:versionName="1.2">
+	package="org.mbs3.android.ufpb2" android:versionCode="6" android:versionName="2">
 	<uses-permission android:name="android.permission.GET_ACCOUNTS" />
 	<uses-permission android:name="android.permission.USE_CREDENTIALS" />
 	<uses-permission android:name="android.permission.MANAGE_ACCOUNTS" />
@@ -55,6 +55,7 @@
 		<activity
 			android:name="org.mbs3.android.ufpb2.authenticator.LDAPAuthenticatorActivity"
 			android:label="@string/ui_activity_title"
+			android:exported="true"
 			android:excludeFromRecents="true">
 			<!--
 				No intent-filter here! This activity is only ever launched by
@@ -67,8 +68,18 @@
 			<intent-filter>
 				<action android:name="android.intent.action.VIEW" />
 				<category android:name="android.intent.category.DEFAULT" />
-				<data android:mimeType="vnd.android.cursor.item/vnd.org.mbs3.android.ufpb2.profile" />
+				<data android:mimeType="vnd.android.cursor.item/vnd.org.mbs3.android.ufpb.profile" />
 			</intent-filter>
+		</activity>
+		
+		<activity
+			android:name="org.mbs3.android.ufpb2.activity.PreferenceActivity"
+			android:label="@string/ui_activity_title"
+			android:excludeFromRecents="true">
+			<!--
+				No intent-filter here! This activity is only ever launched by
+				someone who explicitly knows the class name
+			-->
 		</activity>
 		
 	</application>

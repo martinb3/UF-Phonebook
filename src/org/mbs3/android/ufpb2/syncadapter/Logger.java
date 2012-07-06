@@ -26,7 +26,10 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 import org.mbs3.android.ufpb2.Constants;
+import org.mbs3.android.ufpb2.Preferences;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Environment;
 import android.util.Log;
 
@@ -38,6 +41,7 @@ import android.util.Log;
 public class Logger {
 
 	private BufferedWriter f;
+	private Context ctx;
 	public static final String DATE_FORMAT_NOW = "yyyy-MM-dd HH:mm:ss";
 	public static final String DATE_FORMAT_NOW_FILE = "yyyy-MM-dd-HH-mm-ss";
 
@@ -54,6 +58,9 @@ public class Logger {
 	}
 
 	public void d(String message) {
+		if(!shouldLog(ctx))
+			return;
+		
 		try {
 			if (f != null) {
 				f.write(now() + ": " + message + "\n");
@@ -64,7 +71,13 @@ public class Logger {
 		}
 	}
 
-	public void startLogging() {
+	public void startLogging(Context ctx) {
+		this.ctx=ctx;
+		
+		// if we were told not to log, this should be a no-op after we save the ctx
+		if(!shouldLog(ctx))
+			return;
+		
 		File sdCard = Environment.getExternalStorageDirectory();
 		File dir = new File(sdCard.getAbsolutePath() + Constants.SDCARD_FOLDER);
 		dir.mkdirs();
@@ -87,6 +100,14 @@ public class Logger {
 		} catch (IOException e) {
 			Log.e("TAG", e.getMessage(), e);
 		}
+	}
+	
+	private static boolean shouldLog(Context ctx) {
+		if(ctx == null)
+			return false;
+		
+		SharedPreferences p = ctx.getSharedPreferences(Preferences.PREF_FILENAME, Context.MODE_PRIVATE);
+		return p.getBoolean(Preferences.PREF_LOG_TO_SD, false);
 	}
 
 }
