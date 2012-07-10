@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.HashSet;
 
+import org.mbs3.android.ufpb2.Preferences;
 import org.mbs3.android.ufpb2.R;
 import org.mbs3.android.ufpb2.Constants;
 import org.mbs3.android.ufpb2.ContactListAdapter;
@@ -20,17 +21,19 @@ import android.accounts.AccountManager;
 import android.accounts.AuthenticatorException;
 import android.accounts.OperationCanceledException;
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.app.ListActivity;
 import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
+import android.widget.CheckBox;
 import android.widget.ListView;
 
 public class ApplicationActivity extends ListActivity {
@@ -57,13 +60,12 @@ public class ApplicationActivity extends ListActivity {
 
 		Intent startedIntent = getIntent();
 		Log.i(TAG, "Reading intent: " + startedIntent);
-
 		
 		if(startedIntent != null && startedIntent.getAction().equals(Intent.ACTION_MAIN)) {
 			AccountManager acctMgr = AccountManager.get(getApplicationContext());
 			Account [] accounts = acctMgr.getAccountsByType(Constants.ACCOUNT_TYPE);
 			if(accounts == null || accounts.length <= 0)
-				showDialog(Constants.DIALOG_APP_MAIN);
+				showTipIfNeccesary();
 			else
 				onSearchRequested();
 		}
@@ -172,38 +174,56 @@ public class ApplicationActivity extends ListActivity {
 		return new Contact[0];
 	}
 
-	@Override
-	protected Dialog onCreateDialog(int id) {
-		Dialog dialog;
-	    switch(id) {
-	    case Constants.DIALOG_APP_MAIN:
-	    	AlertDialog.Builder builder = new AlertDialog.Builder(this);
-	    	builder.setMessage(R.string.search_activity_account)
-	    	       .setCancelable(true)
-	    	       .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-	    	           public void onClick(DialogInterface dialog, int id) {
-	    	                dialog.cancel();
-	    	                finish();
-	    	                
-	    	                
-	    	                Intent i = new Intent(Settings.ACTION_SYNC_SETTINGS);
-	    	                i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-	    	                startActivity(i);
+	private void showTipIfNeccesary() {
+		AlertDialog.Builder adb = new AlertDialog.Builder(this);
+        LayoutInflater adbInflater = LayoutInflater.from(this);
+        
+		View eulaLayout = adbInflater.inflate(R.layout.startup_tip, null);
+        final CheckBox dontShowAgain = (CheckBox) eulaLayout.findViewById(R.id.skip);
+        adb.setView(eulaLayout);
+        adb.setTitle("Tip for use");
+        adb.setMessage(R.string.search_activity_account);
+        
+        
+        adb.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                String checkBoxResult = "NOT checked";
+                if (dontShowAgain.isChecked())
+                    checkBoxResult = "checked";
+                SharedPreferences settings = getSharedPreferences(Preferences.PREF_FILENAME, Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = settings.edit();
+                editor.putString(Preferences.PREF_DONT_SHOW_STARTUP, checkBoxResult);
+                // Commit the edits!
+                editor.commit();
+                
+                Intent i = new Intent(Settings.ACTION_SYNC_SETTINGS);
+                i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(i);
+            }
+        });
 
-	    	           }
-	    	       })
-	    	       .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-	    	           public void onClick(DialogInterface dialog, int id) {
-	    	                dialog.cancel();
-	    	                finish();
-	    	           }
-	    	       });
-	    	dialog = builder.create();
-	        break;
-	    default:
-	        dialog = null;
-	    }
-	    return dialog;
+        adb.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                String checkBoxResult = "NOT checked";
+                if (dontShowAgain.isChecked())
+                    checkBoxResult = "checked";
+                SharedPreferences settings = getSharedPreferences(Preferences.PREF_FILENAME, 0);
+                SharedPreferences.Editor editor = settings.edit();
+                editor.putString(Preferences.PREF_DONT_SHOW_STARTUP, checkBoxResult);
+                // Commit the edits!
+                editor.commit();
+                return;
+            }
+        });
+        SharedPreferences settings = getSharedPreferences(Preferences.PREF_FILENAME, 0);
+        String skipMessage = settings.getString(Preferences.PREF_DONT_SHOW_STARTUP, "NOT checked");
+        if (skipMessage != "checked")
+            adb.show();
+
+		
+		
+
+	        // end
 	}
 	
 	public class ContactsBackgroundTask extends AsyncTask <String, Void, Contact[]> {

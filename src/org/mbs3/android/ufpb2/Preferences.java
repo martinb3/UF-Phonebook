@@ -6,4 +6,5 @@ public interface Preferences {
 	
 	// pref keys
 	public static final String PREF_LOG_TO_SD="PREF_LOG_TO_SD";
+	public static final String PREF_DONT_SHOW_STARTUP="PREF_DONT_SHOW_STARTUP";
 }
