@@ -27,7 +27,9 @@ import android.accounts.AccountManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
+import android.widget.Toast;
 
 /**
  * This class is an implementation of AbstractAccountAuthenticator for authenticating accounts in the org.mbs3.android.ufpb2 domain.
@@ -39,11 +41,21 @@ class LDAPAuthenticator extends AbstractAccountAuthenticator {
 	private final Context mContext;
 
 	private static final String TAG = "LDAPAuthenticator";
+	private static final String errAccountExists = "Only one UF Phonebook Sync account is supported on this device";
+	private Handler	accountExistsHandler;
 
 	public LDAPAuthenticator(Context context) {
 		super(context);
 		mContext = context;
+		accountExistsHandler = new Handler() {
+			@Override
+			public void handleMessage(android.os.Message msg) {
+				if (msg.what == 0)
+					Toast.makeText(mContext, errAccountExists, Toast.LENGTH_LONG*2).show();
+			}
+		};
 	}
+	
 
 	@Override
 	public Bundle addAccount(AccountAuthenticatorResponse response, String accountType, String authTokenType, String[] requiredFeatures, Bundle options) {
@@ -51,15 +63,18 @@ class LDAPAuthenticator extends AbstractAccountAuthenticator {
 		AccountManager am = AccountManager.get(mContext);
 		Account[] accounts = am.getAccountsByType(accountType);
 		if(accounts.length > 0) {
-			String err = "You may only have one account of this type";
 			int errCode = AccountManager.ERROR_CODE_UNSUPPORTED_OPERATION;
-			Log.w(TAG, err);
+			Log.w(TAG, errAccountExists);
 
 			// too bad this doesn't show the user an error or message of any kind
 			final Bundle errBundle = new Bundle();
 			errBundle.putInt(AccountManager.KEY_ERROR_CODE, errCode);
-			errBundle.putString(AccountManager.KEY_ERROR_MESSAGE, err);
-			return errBundle;
+			errBundle.putString(AccountManager.KEY_ERROR_MESSAGE, errAccountExists);
+			accountExistsHandler.sendEmptyMessage(0);
+			
+			// choose to return as response.onError over bundle
+			response.onError(errCode, errAccountExists);
+			return null;
 		}
 		
 		final Intent intent = new Intent(mContext, LDAPAuthenticatorActivity.class);
@@ -67,6 +82,8 @@ class LDAPAuthenticator extends AbstractAccountAuthenticator {
 		intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response);
 		final Bundle bundle = new Bundle();
 		bundle.putParcelable(AccountManager.KEY_INTENT, intent);
+		
+		// choose to return as bundle over response.onResult
 		return bundle;
 	}
 
