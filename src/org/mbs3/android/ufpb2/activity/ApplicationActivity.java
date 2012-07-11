@@ -3,11 +3,13 @@ package org.mbs3.android.ufpb2.activity;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.HashSet;
+import java.util.Map;
+import java.util.Map.Entry;
 
-import org.mbs3.android.ufpb2.Preferences;
 import org.mbs3.android.ufpb2.R;
 import org.mbs3.android.ufpb2.Constants;
 import org.mbs3.android.ufpb2.ContactListAdapter;
+import org.mbs3.android.ufpb2.Util;
 import org.mbs3.android.ufpb2.authenticator.LDAPAuthenticatorActivity;
 import org.mbs3.android.ufpb2.client.Contact;
 import org.mbs3.android.ufpb2.client.LDAPServerInstance;
@@ -28,9 +30,12 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.widget.CheckBox;
@@ -57,6 +62,12 @@ public class ApplicationActivity extends ListActivity {
 	protected void onStart() {
 		Log.i(TAG, "Started "+TAG);
 		super.onStart();
+		
+		SharedPreferences p = Util.getPrefs(getApplicationContext());
+		Map<String, ?> m = p.getAll();
+		for(Entry<String,?> entry : m.entrySet()) {
+			System.out.println(entry.getKey()+"="+entry.getValue());
+		}
 
 		Intent startedIntent = getIntent();
 		Log.i(TAG, "Reading intent: " + startedIntent);
@@ -179,20 +190,18 @@ public class ApplicationActivity extends ListActivity {
         LayoutInflater adbInflater = LayoutInflater.from(this);
         
 		View eulaLayout = adbInflater.inflate(R.layout.startup_tip, null);
-        final CheckBox dontShowAgain = (CheckBox) eulaLayout.findViewById(R.id.skip);
+        final CheckBox doNotRemind = (CheckBox) eulaLayout.findViewById(R.id.do_not_remind);
         adb.setView(eulaLayout);
         adb.setTitle("Tip for use");
-        adb.setMessage(R.string.search_activity_account);
+        adb.setMessage(R.string.profile_activity_account);
         
         
         adb.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
-                String checkBoxResult = "NOT checked";
-                if (dontShowAgain.isChecked())
-                    checkBoxResult = "checked";
-                SharedPreferences settings = getSharedPreferences(Preferences.PREF_FILENAME, Context.MODE_PRIVATE);
+            	boolean checkBoxResult = doNotRemind.isChecked();
+                SharedPreferences settings = Util.getPrefs(getApplicationContext());
                 SharedPreferences.Editor editor = settings.edit();
-                editor.putString(Preferences.PREF_DONT_SHOW_STARTUP, checkBoxResult);
+                editor.putBoolean(getString(R.string.pref_do_not_remind), checkBoxResult);
                 // Commit the edits!
                 editor.commit();
                 
@@ -204,20 +213,18 @@ public class ApplicationActivity extends ListActivity {
 
         adb.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
-                String checkBoxResult = "NOT checked";
-                if (dontShowAgain.isChecked())
-                    checkBoxResult = "checked";
-                SharedPreferences settings = getSharedPreferences(Preferences.PREF_FILENAME, 0);
+                boolean checkBoxResult = doNotRemind.isChecked();
+                SharedPreferences settings = Util.getPrefs(getApplicationContext());
                 SharedPreferences.Editor editor = settings.edit();
-                editor.putString(Preferences.PREF_DONT_SHOW_STARTUP, checkBoxResult);
+                editor.putBoolean(getString(R.string.pref_do_not_remind), checkBoxResult);
                 // Commit the edits!
                 editor.commit();
                 return;
             }
         });
-        SharedPreferences settings = getSharedPreferences(Preferences.PREF_FILENAME, 0);
-        String skipMessage = settings.getString(Preferences.PREF_DONT_SHOW_STARTUP, "NOT checked");
-        if (skipMessage != "checked")
+        SharedPreferences settings = Util.getPrefs(getApplicationContext());
+        boolean doNotRemindBool = settings.getBoolean(getString(R.string.pref_do_not_remind), false);
+        if (!doNotRemindBool)
             adb.show();
 
 		
@@ -250,5 +257,29 @@ public class ApplicationActivity extends ListActivity {
 		}
 
 	}
+
+	private static final int OPT_MENU_CATEGORY_APP=0;
+	private static final int OPT_MENU_FIRST=0;
+	//private static final int OPT_MENU_SECOND=1;
 	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		super.onCreateOptionsMenu(menu);
+
+	
+		Drawable drwPref = getResources().getDrawable(android.R.drawable.ic_menu_preferences);
+		menu.add(OPT_MENU_CATEGORY_APP, OPT_MENU_FIRST, 0, R.string.profile_activity_opt_menu_preferences)
+			.setIcon(drwPref);
+		
+		//menu.add(OPT_MENU_CATEGORY_APP, OPT_MENU_SECOND, 0, "second 1");
+		
+		return true;
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		Log.d(TAG,"Item selected " + item.getItemId());
+		startActivity(new Intent(this, PreferenceActivity.class));
+		return true;
+	}
 }

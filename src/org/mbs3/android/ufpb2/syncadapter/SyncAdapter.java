@@ -62,7 +62,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 	@Override
 	public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult syncResult) {
 		Logger l = new Logger();
-		l.startLogging(mContext);
+		l.startLogging(getContext().getApplicationContext());
 		
 		l.d("Start the sync");
 		Log.d(TAG, "Start the sync.");

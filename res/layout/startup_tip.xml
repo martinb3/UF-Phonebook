@@ -7,7 +7,7 @@
     android:padding="10dp" >
     <CheckBox
         xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/skip"
+        android:id="@+id/do_not_remind"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Do not remind me again." >

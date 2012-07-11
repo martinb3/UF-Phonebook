@@ -20,12 +20,17 @@
 	<string name="label">UF Phonebook Sync</string>
 	<string name="app_name">UF Phone Book</string>
 
-	<string name="search_activity_account">To sync your existing contacts with the UF Phonebook, you must add an account of type "UF Phonebook Sync." Press OK to be taken to the accounts screen now.</string>
-	<string name="search_activity_search">Press your device\'s search button to begin searching for contacts.</string>
-	<string name="search_activity_hint">Enter a name, email address, or GatorLink ID to find people.</string>
+	<!-- Preferences -->
+	<string name="pref_log_to_sd">pref_log_to_sd</string>
+	<string name="pref_do_not_remind">pref_do_not_remind</string>
+	    
+	<!-- ProfileActivity -->
+	<string name="profile_activity_account">To sync your existing contacts with the UF Phonebook, you must add an account of type "UF Phonebook Sync." Press OK to be taken to the accounts screen now.</string>
+	<string name="profile_activity_search">Press your device\'s search button to begin searching for contacts.</string>
+	<string name="profile_activity_hint">Enter a name, email address, or GatorLink ID to find people.</string>
+	<string name="profile_activity_opt_menu_preferences">Preferences</string>
 
 	<!-- AuthenticatorActivity -->
-	<skip />
 	<string name="login_activity_host_label">Host</string>
 	<string name="login_activity_port_label">Port</string>
 	<string name="login_activity_encryption_label">Encryption</string>
@@ -67,5 +72,6 @@
 	<string name="ui_activity_authenticating">Authenticating\u2026</string>
 
 	<!-- Title string for Login activity-->
-	<string name="ui_activity_title">LDAP Server settings</string>
+	<string name="authenticator_activity_title">LDAP Server settings</string>
+	<string name="preference_activity_title">UF Phonebook Sync Preferences</string>
 </resources>

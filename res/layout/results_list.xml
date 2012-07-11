@@ -19,5 +19,5 @@
                android:padding="5dip"
                android:textSize="14dip"
                android:background="#000000"
-               android:text="@string/search_activity_search"/>
+               android:text="@string/profile_activity_search"/>
  </LinearLayout>

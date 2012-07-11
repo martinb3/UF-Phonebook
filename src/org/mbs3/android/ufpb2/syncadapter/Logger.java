@@ -26,7 +26,8 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 import org.mbs3.android.ufpb2.Constants;
-import org.mbs3.android.ufpb2.Preferences;
+import org.mbs3.android.ufpb2.R;
+import org.mbs3.android.ufpb2.Util;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -44,6 +45,7 @@ public class Logger {
 	private Context ctx;
 	public static final String DATE_FORMAT_NOW = "yyyy-MM-dd HH:mm:ss";
 	public static final String DATE_FORMAT_NOW_FILE = "yyyy-MM-dd-HH-mm-ss";
+	public static final String TAG = "org.mbs3.android.ufpb2.syncadapter.Logger";
 
 	private static String now() {
 		Calendar cal = Calendar.getInstance();
@@ -75,8 +77,13 @@ public class Logger {
 		this.ctx=ctx;
 		
 		// if we were told not to log, this should be a no-op after we save the ctx
-		if(!shouldLog(ctx))
+		if(!shouldLog(ctx.getApplicationContext()))
 			return;
+		
+		if(!Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
+			Log.d(TAG, "Cannot write to debug log as external media is not mounted or is read only");
+			return;
+		}
 		
 		File sdCard = Environment.getExternalStorageDirectory();
 		File dir = new File(sdCard.getAbsolutePath() + Constants.SDCARD_FOLDER);
@@ -103,11 +110,15 @@ public class Logger {
 	}
 	
 	private static boolean shouldLog(Context ctx) {
-		if(ctx == null)
+		if(ctx == null) {
+			Log.d(TAG,"Logger received null context, no debug log will be written");
 			return false;
+		}
 		
-		SharedPreferences p = ctx.getSharedPreferences(Preferences.PREF_FILENAME, Context.MODE_PRIVATE);
-		return p.getBoolean(Preferences.PREF_LOG_TO_SD, false);
+		SharedPreferences p = Util.getPrefs(ctx);
+		boolean shouldDebugLog = p.getBoolean(ctx.getString(R.string.pref_log_to_sd), false);
+		Log.d(TAG,"Logger invoked, preferences dictate I " + (shouldDebugLog ? "will" : "won't") + " write to the debug log");
+		return shouldDebugLog;
 	}
 
 }

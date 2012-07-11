@@ -54,7 +54,7 @@
 		
 		<activity
 			android:name="org.mbs3.android.ufpb2.authenticator.LDAPAuthenticatorActivity"
-			android:label="@string/ui_activity_title"
+			android:label="@string/authenticator_activity_title"
 			android:exported="true"
 			android:excludeFromRecents="true">
 			<!--
@@ -74,7 +74,7 @@
 		
 		<activity
 			android:name="org.mbs3.android.ufpb2.activity.PreferenceActivity"
-			android:label="@string/ui_activity_title"
+			android:label="@string/preference_activity_title"
 			android:excludeFromRecents="true">
 			<!--
 				No intent-filter here! This activity is only ever launched by
