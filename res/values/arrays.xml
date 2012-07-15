@@ -12,16 +12,16 @@
  distributed under the License is distributed on an "AS IS" BASIS,
  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  See the License for the specific language governing permissions and
- limitations under the License.
- -->
- 
+ limitations under the License.
+-->
+
 <resources>
-	<string-array name="encryption_methods">
+
+    <string-array name="encryption_methods">
         <item>No encryption</item>
         <item>SSL</item>
         <item>StartTLS</item>
     </string-array>
-
     <string-array name="updateInterval">
         <item name="1000">Every 1 second</item>
         <item name="5000">Every 5 seconds</item>
@@ -29,7 +29,6 @@
         <item name="60000">Every 1 minute</item>
         <item name="300000">Every 5 minutes</item>
     </string-array>
-    
     <string-array name="updateIntervalValues">
         <item name="1000">1000</item>
         <item name="5000">5000</item>

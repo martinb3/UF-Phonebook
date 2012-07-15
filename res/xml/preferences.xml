@@ -1,33 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
 
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory
+        android:key="first_category"
+        android:title="Main settings" >
 
-    <PreferenceCategory 
-        android:title="Main settings"
-        android:key="first_category">
-        
-        <!--  CheckBoxPreference 
+        <!--
+        CheckBoxPreference 
             android:key="perform_updates"
             android:summary="Enable or disable data updates"
             android:title="Enable updates" 
             android:defaultValue="true"
-        /-->
-        
-		<CheckBoxPreference 
+        /
+        -->
+
+        <CheckBoxPreference
+            android:defaultValue="false"
             android:key="pref_log_to_sd"
             android:summary="Write debugging information to SD card"
-            android:title="Debug log" 
+            android:title="Debug log" />
+        <CheckBoxPreference
             android:defaultValue="false"
-        />
-        
-        <CheckBoxPreference 
             android:key="pref_do_not_remind"
             android:summary="Suppress missing account warnings"
-            android:title="Don't remind" 
-            android:defaultValue="false"
-        />
-        
-        <!-- ListPreference 
+            android:title="Don&apos;t remind" />
+
+        <!--
+        ListPreference 
             android:key="updates_interval"
             android:title="Updates interval"
             android:summary="Define how often updates will be performed"
@@ -35,11 +34,13 @@
             android:entries="@array/updateInterval"
             android:entryValues="@array/updateIntervalValues"
             android:dependency="perform_updates"
-        /-->    
-            
+        /
+        -->
+
     </PreferenceCategory>
 
-    <!--  PreferenceCategory 
+    <!--
+    PreferenceCategory 
         android:title="Second Category"
         android:key="second_category">
 
@@ -51,6 +52,7 @@
             android:dialogMessage="Provide a message"    
             android:defaultValue="Default welcome message" />
 
-    </PreferenceCategory -->
-    
+    </PreferenceCategory
+    -->
+
 </PreferenceScreen>

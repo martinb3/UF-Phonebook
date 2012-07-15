@@ -12,12 +12,11 @@
  distributed under the License is distributed on an "AS IS" BASIS,
  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  See the License for the specific language governing permissions and
- limitations under the License.
- -->
- 
+ limitations under the License.
+-->
+
 <account-authenticator xmlns:android="http://schemas.android.com/apk/res/android"
     android:accountType="org.mbs3.android.ufpb2"
     android:icon="@drawable/icon"
-    android:smallIcon="@drawable/icon"
     android:label="@string/label"
-/>
+    android:smallIcon="@drawable/icon" />
