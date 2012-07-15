@@ -1,87 +1,113 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-	package="org.mbs3.android.ufpb2" android:versionCode="8" android:versionName="2.0.8">
-	<uses-permission android:name="android.permission.GET_ACCOUNTS" />
-	<uses-permission android:name="android.permission.USE_CREDENTIALS" />
-	<uses-permission android:name="android.permission.MANAGE_ACCOUNTS" />
-	<uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS" />
-	<uses-permission android:name="android.permission.INTERNET" />
-	<uses-permission android:name="android.permission.WRITE_SETTINGS" />
-	<uses-permission android:name="android.permission.WRITE_SECURE_SETTINGS" />
-	<uses-permission android:name="android.permission.READ_CONTACTS" />
-	<uses-permission android:name="android.permission.WRITE_CONTACTS" />
-	<uses-permission android:name="android.permission.READ_SYNC_STATS" />
-	<uses-permission android:name="android.permission.READ_SYNC_SETTINGS" />
-	<uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS" />
-	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-	
-	<application android:icon="@drawable/icon" android:label="@string/app_name" android:debuggable="false">
-		<service
-			android:name="org.mbs3.android.ufpb2.authenticator.LDAPAuthenticationService"
-			android:exported="true">
-			<intent-filter>
-				<action android:name="android.accounts.AccountAuthenticator" />
-			</intent-filter>
-			<meta-data android:name="android.accounts.AccountAuthenticator"
-				android:resource="@xml/authenticator" />
-		</service>
-		<service android:name="org.mbs3.android.ufpb2.syncadapter.SyncService"
-			android:exported="true">
-			<intent-filter>
-				<action android:name="android.content.SyncAdapter" />
-			</intent-filter>
-			<meta-data android:name="android.content.SyncAdapter"
-				android:resource="@xml/syncadapter" />
-		    <meta-data android:name="android.provider.CONTACTS_STRUCTURE"
-   			    android:resource="@xml/contacts" />
-		</service>
-		<activity
-			android:name="org.mbs3.android.ufpb2.activity.ApplicationActivity"
-			android:label="@string/app_name"
-			android:excludeFromRecents="false">
-			<intent-filter>
-				<action android:name="android.intent.action.MAIN"/>
-				<category android:name="android.intent.category.LAUNCHER" />
-			</intent-filter>
-			
-			<intent-filter>
-			    <action android:name="android.intent.action.SEARCH" />
-        	</intent-filter>
-     		<meta-data android:name="android.app.searchable"
-         	    android:resource="@xml/searchable"/>
-			
-		</activity>
-		
-		<activity
-			android:name="org.mbs3.android.ufpb2.authenticator.LDAPAuthenticatorActivity"
-			android:label="@string/authenticator_activity_title"
-			android:exported="true"
-			android:excludeFromRecents="true">
-			<!--
+    xmlns:tools="http://schemas.android.com/tools"
+    package="org.mbs3.android.ufpb2"
+    android:versionCode="8"
+    android:versionName="2.0.8" >
+
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <uses-permission android:name="android.permission.USE_CREDENTIALS" />
+    <uses-permission android:name="android.permission.MANAGE_ACCOUNTS" />
+    <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WRITE_SETTINGS" />
+    <uses-permission android:name="android.permission.WRITE_SECURE_SETTINGS" />
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <uses-permission android:name="android.permission.WRITE_CONTACTS" />
+    <uses-permission android:name="android.permission.READ_SYNC_STATS" />
+    <uses-permission android:name="android.permission.READ_SYNC_SETTINGS" />
+    <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
+    <uses-sdk
+        android:minSdkVersion="5"
+        android:targetSdkVersion="7" />
+
+    <application
+        android:icon="@drawable/icon"
+        android:label="@string/app_name" >
+        <service
+            android:name="org.mbs3.android.ufpb2.authenticator.LDAPAuthenticationService"
+            android:exported="true"
+            tools:ignore="ExportedService" >
+            <intent-filter>
+                <action android:name="android.accounts.AccountAuthenticator" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.accounts.AccountAuthenticator"
+                android:resource="@xml/authenticator" />
+        </service>
+        <service
+            android:name="org.mbs3.android.ufpb2.syncadapter.SyncService"
+            android:exported="true"
+            tools:ignore="ExportedService" >
+            <intent-filter>
+                <action android:name="android.content.SyncAdapter" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.content.SyncAdapter"
+                android:resource="@xml/syncadapter" />
+            <meta-data
+                android:name="android.provider.CONTACTS_STRUCTURE"
+                android:resource="@xml/contacts" />
+        </service>
+
+        <activity
+            android:name="org.mbs3.android.ufpb2.activity.ApplicationActivity"
+            android:excludeFromRecents="false"
+            android:label="@string/app_name" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.SEARCH" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.app.searchable"
+                android:resource="@xml/searchable" />
+        </activity>
+        <activity
+            android:name="org.mbs3.android.ufpb2.authenticator.LDAPAuthenticatorActivity"
+            android:excludeFromRecents="true"
+            android:exported="true"
+            android:label="@string/authenticator_activity_title"
+            tools:ignore="ExportedActivity" >
+
+            <!--
+				No intent-filter here! This activity is only ever launched by
+				someone who explicitly knows the class name; it's still exported due to bugs in Motorola
+				which won't launch this if it isn't exported
+            -->
+        </activity>
+        <activity
+            android:name="org.mbs3.android.ufpb2.activity.ProfileActivity"
+            android:exported="true"
+            android:label="@string/profile_label"
+            android:theme="@android:style/Theme.NoTitleBar"
+            tools:ignore="ExportedActivity" >
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:mimeType="vnd.android.cursor.item/vnd.org.mbs3.android.ufpb.profile" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="org.mbs3.android.ufpb2.activity.PreferenceActivity"
+            android:excludeFromRecents="true"
+            android:label="@string/preference_activity_title" >
+
+            <!--
 				No intent-filter here! This activity is only ever launched by
 				someone who explicitly knows the class name
-			-->
-		</activity>
-		<activity android:name="org.mbs3.android.ufpb2.activity.ProfileActivity" android:label="@string/profile_label"
-			android:theme="@android:style/Theme.NoTitleBar"
-			>
-			<intent-filter>
-				<action android:name="android.intent.action.VIEW" />
-				<category android:name="android.intent.category.DEFAULT" />
-				<data android:mimeType="vnd.android.cursor.item/vnd.org.mbs3.android.ufpb.profile" />
-			</intent-filter>
-		</activity>
-		
-		<activity
-			android:name="org.mbs3.android.ufpb2.activity.PreferenceActivity"
-			android:label="@string/preference_activity_title"
-			android:excludeFromRecents="true">
-			<!--
-				No intent-filter here! This activity is only ever launched by
-				someone who explicitly knows the class name
-			-->
-		</activity>
-		
-	</application>
-	<uses-sdk android:minSdkVersion="5" android:targetSdkVersion="7"/>
-</manifest> 
+            -->
+        </activity>
+    </application>
+
+</manifest>

@@ -62,7 +62,7 @@ public class Logger {
 	public void d(String message) {
 		if(!shouldLog(ctx))
 			return;
-		
+
 		try {
 			if (f != null) {
 				f.write(now() + ": " + message + "\n");
