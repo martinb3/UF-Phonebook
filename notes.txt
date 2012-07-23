@@ -1,4 +1,4 @@
 market://details?id=org.mbs3.android.ufpb2
 D:\Users\Martin\Desktop     "D:\Program Files\Java\jdk1.6.0_23\bin\jarsigner.exe" -verbose LDAPSync.apk mbs3android
-D:\Users\Martin\Desktop     "D:\Users\Martin\Java Libraries\android-sdk-windows\tools\zipalign.exe" -v 4 LDAPSync.apk LDAPSync-aligned.apk
+D:\Users\Martin\Desktop     "D:\Program Files (x86)\android-sdk-windows\tools\zipalign.exe" -v 4 LDAPSync.apk LDAPSync-aligned.apk
 D:\Users\Martin\.keystore for keystore
