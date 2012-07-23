@@ -59,11 +59,12 @@ public class Logger {
 		return sdf.format(cal.getTime());
 	}
 
-	public void d(String message) {
+	public void d(String tag, String message) {
 		if(!shouldLog(ctx))
 			return;
 
 		try {
+			Log.d(tag, message);
 			if (f != null) {
 				f.write(now() + ": " + message + "\n");
 				f.flush();

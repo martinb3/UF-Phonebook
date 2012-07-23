@@ -36,7 +36,6 @@ import android.provider.ContactsContract.CommonDataKinds.Photo;
 import android.provider.ContactsContract.CommonDataKinds.StructuredName;
 import android.provider.ContactsContract.CommonDataKinds.StructuredPostal;
 import android.text.TextUtils;
-import android.util.Log;
 
 /**
  * A helper class that merges the fields of existing contacts with the fields of new contacts.
@@ -62,8 +61,7 @@ public class ContactMerger {
 
 	public void updateName() {
 		if (TextUtils.isEmpty(existingC.getFirstName()) || TextUtils.isEmpty(existingC.getLastName()) || TextUtils.isEmpty(existingC.getDisplayName())) {
-			l.d("Set name to: " + newC.getFirstName() + " " + newC.getLastName() + " - " + newC.getDisplayName());
-			Log.d(TAG,"Set name to: " + newC.getFirstName() + " " + newC.getLastName() + " - " + newC.getDisplayName());
+			l.d(TAG, "Set name to: " + newC.getFirstName() + " " + newC.getLastName() + " - " + newC.getDisplayName());
 			ContentValues cv = new ContentValues();
 			cv.put(StructuredName.GIVEN_NAME, newC.getFirstName());
 			cv.put(StructuredName.FAMILY_NAME, newC.getLastName());
@@ -72,8 +70,7 @@ public class ContactMerger {
 			Builder insertOp = createInsert(rawContactId, cv);
 			ops.add(insertOp.build());
 		} else if (!newC.getFirstName().equals(existingC.getFirstName()) || !newC.getLastName().equals(existingC.getLastName()) || !newC.getDisplayName().equals(existingC.getDisplayName())) {
-			l.d("Update name to: " + newC.getFirstName() + " " + newC.getLastName()+ " - " + newC.getDisplayName());
-			Log.d(TAG,"Update name to: " + newC.getFirstName() + " " + newC.getLastName()+ " - " + newC.getDisplayName());
+			l.d(TAG,"Update name to: " + newC.getFirstName() + " " + newC.getLastName()+ " - " + newC.getDisplayName());
 			ContentValues cv = new ContentValues();
 			cv.put(StructuredName.GIVEN_NAME, newC.getFirstName());
 			cv.put(StructuredName.FAMILY_NAME, newC.getLastName());
@@ -118,11 +115,11 @@ public class ContactMerger {
 	private void updateMail(String newMail, String existingMail, int mailType) {
 		String selection = Data.RAW_CONTACT_ID + "=? AND " + Email.MIMETYPE + "=? AND " + Email.TYPE + "=?";
 		if (TextUtils.isEmpty(newMail) && !TextUtils.isEmpty(existingMail)) {
-			l.d("Delete mail data " + mailType + " (" + existingMail + ")");
+			l.d(TAG,"Delete mail data " + mailType + " (" + existingMail + ")");
 			ops.add(ContentProviderOperation.newDelete(addCallerIsSyncAdapterFlag(Data.CONTENT_URI)).withSelection(selection,
 					new String[] { rawContactId + "", Email.CONTENT_ITEM_TYPE, mailType + "" }).build());
 		} else if (!TextUtils.isEmpty(newMail) && TextUtils.isEmpty(existingMail)) {
-			l.d("Add mail data " + mailType + " (" + newMail + ")");
+			l.d(TAG,"Add mail data " + mailType + " (" + newMail + ")");
 			ContentValues cv = new ContentValues();
 			cv.put(Email.DATA, newMail);
 			cv.put(Email.TYPE, mailType);
@@ -130,7 +127,7 @@ public class ContactMerger {
 			Builder insertOp = createInsert(rawContactId, cv);
 			ops.add(insertOp.build());
 		} else if (!TextUtils.isEmpty(newMail) && !newMail.equals(existingMail)) {
-			l.d("Update mail data " + mailType + " (" + existingMail + " => " + newMail + ")");
+			l.d(TAG,"Update mail data " + mailType + " (" + existingMail + " => " + newMail + ")");
 			Builder updateOp = ContentProviderOperation.newUpdate(addCallerIsSyncAdapterFlag(Data.CONTENT_URI)).withSelection(selection,
 					new String[] { rawContactId + "", Email.CONTENT_ITEM_TYPE, mailType + "" }).withValue(Email.DATA, newMail);
 			ops.add(updateOp.build());
@@ -156,11 +153,11 @@ public class ContactMerger {
 	private void updatePhone(String newPhone, String existingPhone, int phoneType) {
 		String selection = Data.RAW_CONTACT_ID + "=? AND " + Phone.MIMETYPE + "=? AND " + Phone.TYPE + "=?";
 		if (TextUtils.isEmpty(newPhone) && !TextUtils.isEmpty(existingPhone)) {
-			l.d("Delete phone data " + phoneType + " (" + existingPhone + ")");
+			l.d(TAG,"Delete phone data " + phoneType + " (" + existingPhone + ")");
 			ops.add(ContentProviderOperation.newDelete(addCallerIsSyncAdapterFlag(Data.CONTENT_URI)).withSelection(selection,
 					new String[] { rawContactId + "", Phone.CONTENT_ITEM_TYPE, phoneType + "" }).build());
 		} else if (!TextUtils.isEmpty(newPhone) && TextUtils.isEmpty(existingPhone)) {
-			l.d("Add phone data " + phoneType + " (" + newPhone + ")");
+			l.d(TAG,"Add phone data " + phoneType + " (" + newPhone + ")");
 			ContentValues cv = new ContentValues();
 			cv.put(Phone.DATA, newPhone);
 			cv.put(Phone.TYPE, phoneType);
@@ -168,7 +165,7 @@ public class ContactMerger {
 			Builder insertOp = createInsert(rawContactId, cv);
 			ops.add(insertOp.build());
 		} else if (!TextUtils.isEmpty(newPhone) && !newPhone.equals(existingPhone)) {
-			l.d("Update phone data " + phoneType + " (" + existingPhone + " => " + newPhone + ")");
+			l.d(TAG,"Update phone data " + phoneType + " (" + existingPhone + " => " + newPhone + ")");
 			Builder updateOp = ContentProviderOperation.newUpdate(addCallerIsSyncAdapterFlag(Data.CONTENT_URI)).withSelection(selection,
 					new String[] { rawContactId + "", Phone.CONTENT_ITEM_TYPE, phoneType + "" }).withValue(Phone.DATA, newPhone);
 			ops.add(updateOp.build());
@@ -178,18 +175,18 @@ public class ContactMerger {
 	public void updatePicture() {
 		String selection = Data.RAW_CONTACT_ID + "=? AND " + Data.MIMETYPE + "=?";
 		if (newC.getImage() == null && existingC.getImage() != null) {
-			l.d("Delete image");
+			l.d(TAG,"Delete image");
 			ops.add(ContentProviderOperation.newDelete(addCallerIsSyncAdapterFlag(Data.CONTENT_URI)).withSelection(selection,
 					new String[] { rawContactId + "", Photo.CONTENT_ITEM_TYPE }).build());
 		} else if (newC.getImage() != null && existingC.getImage() == null) {
-			l.d("Add image");
+			l.d(TAG,"Add image");
 			ContentValues cv = new ContentValues();
 			cv.put(Photo.PHOTO, newC.getImage());
 			cv.put(Photo.MIMETYPE, Photo.CONTENT_ITEM_TYPE);
 			Builder insertOp = createInsert(rawContactId, cv);
 			ops.add(insertOp.build());
 		} else if (!Arrays.equals(newC.getImage(), existingC.getImage())) {
-			l.d("Update image");
+			l.d(TAG,"Update image");
 			Builder updateOp = ContentProviderOperation.newUpdate(addCallerIsSyncAdapterFlag(Data.CONTENT_URI)).withSelection(selection,
 					new String[] { rawContactId + "", Photo.CONTENT_ITEM_TYPE }).withValue(Photo.PHOTO, newC.getImage());
 			ops.add(updateOp.build());
@@ -204,7 +201,7 @@ public class ContactMerger {
 			String selection = Data.RAW_CONTACT_ID + "=? AND " + ContactsContract.Data.MIMETYPE + "=?";
 			
 			String msg = "Updating existing profile for raw contact "+rawContactId+", newC=" + newC;
-			l.d(msg); Log.d(TAG,msg);
+			l.d(TAG,msg);
 			
 			ContentValues cv = new ContentValues();
 			
@@ -223,8 +220,7 @@ public class ContactMerger {
 		}
 		else {
 			String msg = "Create new profile for raw contact "+rawContactId+", newC=" + newC;
-			l.d(msg);
-			Log.d(TAG , msg);
+			l.d(TAG,msg);
 			ContentValues cv = new ContentValues();
 			
 			// first insert / create
@@ -237,7 +233,7 @@ public class ContactMerger {
 			Builder insertOp = createInsert(rawContactId, cv);
 			ops.add(insertOp.build());
 			
-			l.d(msg); Log.d(TAG,msg);
+			l.d(TAG,msg);
 		}
 	}
 
@@ -256,11 +252,11 @@ public class ContactMerger {
 	private void updateAddress(org.mbs3.android.ufpb2.client.Address newAddress, org.mbs3.android.ufpb2.client.Address existingAddress, int adressType) {
 		final String selection = Data.RAW_CONTACT_ID + "=? AND " + Data.MIMETYPE + "=? AND " + StructuredPostal.TYPE + "=?";
 		if ((newAddress == null || newAddress.isEmpty()) && existingAddress != null) {
-			l.d("Delete address " + adressType + "(" + existingC.getFirstName() + " " + existingC.getLastName() + "), " + newAddress);
+			l.d(TAG,"Delete address " + adressType + "(" + existingC.getFirstName() + " " + existingC.getLastName() + "), " + newAddress);
 			ops.add(ContentProviderOperation.newDelete(addCallerIsSyncAdapterFlag(Data.CONTENT_URI)).withSelection(selection,
 					new String[] { rawContactId + "", StructuredPostal.CONTENT_ITEM_TYPE, adressType + "" }).build());
 		} else if (existingAddress == null && newAddress != null && !newAddress.isEmpty()) {
-			l.d("Add address " + adressType + "(" + existingC.getFirstName() + " " + existingC.getLastName() + "), " + newAddress);
+			l.d(TAG,"Add address " + adressType + "(" + existingC.getFirstName() + " " + existingC.getLastName() + "), " + newAddress);
 			ContentValues cv = new ContentValues();
 			cv.put(StructuredPostal.MIMETYPE, StructuredPostal.CONTENT_ITEM_TYPE);
 			cv.put(StructuredPostal.TYPE, adressType);
@@ -272,7 +268,7 @@ public class ContactMerger {
 			Builder insertOp = createInsert(rawContactId, cv);
 			ops.add(insertOp.build());
 		} else if (newAddress != null && !newAddress.isEmpty() && !newAddress.equals(existingAddress)) {
-			l.d("Update address " + adressType + "(" + existingC.getFirstName() + " " + existingC.getLastName() + "), " + newAddress);
+			l.d(TAG,"Update address " + adressType + "(" + existingC.getFirstName() + " " + existingC.getLastName() + "), " + newAddress);
 			ContentValues cv = new ContentValues();
 			cv.put(StructuredPostal.STREET, newAddress.getStreet());
 			cv.put(StructuredPostal.CITY, newAddress.getCity());
@@ -288,11 +284,11 @@ public class ContactMerger {
 	public void updateOrganization(org.mbs3.android.ufpb2.client.Organization newOrg, org.mbs3.android.ufpb2.client.Organization existingOrg, int orgType) {
 		final String selection = Data.RAW_CONTACT_ID + "=? AND " + Data.MIMETYPE + "=? AND " + Organization.TYPE + "=?";
 		if ((newOrg == null || newOrg.isEmpty()) && existingOrg != null) {
-			l.d("Delete organization " + orgType + "(" + existingC.getFirstName() + " " + existingC.getLastName() + "), " + newOrg);
+			l.d(TAG,"Delete organization " + orgType + "(" + existingC.getFirstName() + " " + existingC.getLastName() + "), " + newOrg);
 			ops.add(ContentProviderOperation.newDelete(addCallerIsSyncAdapterFlag(Data.CONTENT_URI)).withSelection(selection,
 					new String[] { rawContactId + "", Organization.CONTENT_ITEM_TYPE, orgType + "" }).build());
 		} else if (existingOrg == null && newOrg != null && !newOrg.isEmpty()) {
-			l.d("Add organization " + orgType + "(" + existingC.getFirstName() + " " + existingC.getLastName() + "), " + newOrg);
+			l.d(TAG,"Add organization " + orgType + "(" + existingC.getFirstName() + " " + existingC.getLastName() + "), " + newOrg);
 			ContentValues cv = new ContentValues();
 			cv.put(Organization.MIMETYPE, Organization.CONTENT_ITEM_TYPE);
 			cv.put(Organization.TYPE, orgType);
@@ -303,7 +299,7 @@ public class ContactMerger {
 			Builder insertOp = createInsert(rawContactId, cv);
 			ops.add(insertOp.build());
 		} else if (newOrg != null && !newOrg.isEmpty() && !newOrg.equals(existingOrg)) {
-			l.d("Update organization " + orgType + "(" + existingC.getFirstName() + " " + existingC.getLastName() + "), " + newOrg);
+			l.d(TAG,"Update organization " + orgType + "(" + existingC.getFirstName() + " " + existingC.getLastName() + "), " + newOrg);
 			ContentValues cv = new ContentValues();
 			cv.put(Organization.COMPANY, newOrg.getCompany());
 			cv.put(Organization.TITLE, newOrg.getTitle());

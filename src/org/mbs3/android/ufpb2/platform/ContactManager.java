@@ -95,8 +95,7 @@ public class ContactManager {
 			if (contactsOnPhone.containsKey(contact.getDn())) {
 				Long contactId = contactsOnPhone.get(contact.getDn());
 				String msg = "syncContacts: Update contact under account "+accountName+": " + contact + " (" + contactId + ")";
-				Log.d(TAG, msg);
-				l.d(msg);
+				l.d(TAG, msg);
 				updateContact(resolver, contactId, contact);
 				
 				// update aggregation 
@@ -107,8 +106,7 @@ public class ContactManager {
 				contactsOnPhone.remove(contact.getDn());
 			} else {
 				String msg = "syncContacts: Add contact under account "+accountName+": " + contact;
-				Log.d(TAG, msg);
-				l.d(msg);
+				l.d(TAG,msg);
 				Long contactId = addContact(resolver, contact);
 				
 				// update aggregation
@@ -120,9 +118,8 @@ public class ContactManager {
 
 		// Delete contacts
 		for (Entry<String, Long> contact : contactsOnPhone.entrySet()) {
-			Log.d(TAG, "Delete contact: " + contact.getKey());
+			l.d(TAG,"Delete contact: " + contact.getKey() + "(" + contact.getValue() + ")");
 			deleteContact(resolver, contact.getValue());
-			l.d("Delete contact: " + contact.getKey() + "(" + contact.getValue() + ")");
 			syncResult.stats.numDeletes++;
 		}
 	}
@@ -312,8 +309,7 @@ public class ContactManager {
 			long id = ContentUris.parseId(res[0].uri);
 			
 			String msg = "The new contact has id: " + id;
-			l.d(msg);
-			Log.d(TAG, msg);
+			l.d(TAG,msg);
 			
 			
 			return id;

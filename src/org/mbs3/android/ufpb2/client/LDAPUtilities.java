@@ -137,16 +137,17 @@ public class LDAPUtilities {
 				
 				for(String addr : allAddr ) {
 					String emailFilter = "(&(mail="+addr+")"+searchFilter+")";
+					Log.d(TAG, "fetchContacts: Attempting search using filter "+emailFilter);
+					
 					SearchResult searchResult = connection.search(baseDN, SearchScope.SUB, emailFilter, getUsedAttributes(mappingBundle));
 					List<SearchResultEntry> results = searchResult.getSearchEntries();
-					Log.i(TAG, "fetchContacts: Found " + results.size() + " results for this contact (filter was "+emailFilter+")");
 					if(results.size() == 1) {
 						SearchResultEntry e = results.get(0);
 						DNs.put(e.getDN(), origin);
 						Log.i(TAG, "fetchContacts: Found in directory: (from raw contact id "+origin+") " + addr + ", dn="+e.getDN()+")");
 					}
 					else {
-						Log.i(TAG, "fetchContacts: Not found in directory: " + addr + ")");
+						Log.i(TAG, "fetchContacts: Not found in directory: " + addr + ", or more than one result found (n="+results.size()+")");
 					}
 				}
 			}

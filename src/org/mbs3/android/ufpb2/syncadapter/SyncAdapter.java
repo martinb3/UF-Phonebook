@@ -62,10 +62,9 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 	@Override
 	public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult syncResult) {
 		Logger l = new Logger();
-		l.startLogging(getContext().getApplicationContext());
+		l.startLogging(getContext());
 		
-		l.d("Start the sync");
-		Log.d(TAG, "Start the sync.");
+		l.d(TAG,"Start the sync");
 		
 		
 		HashMap<Contact, Long> users = new HashMap<Contact, Long>();
@@ -120,8 +119,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 			mLastUpdated = new Date();
 			// update platform contacts.
 			String msg = "Calling contactManager's sync contacts for " + account.name + " with " + users.size() + " users";
-			Log.d(TAG, msg);
-			l.d(msg);
+			l.d(TAG,msg);
 			
 			cm.syncContacts(mContext, account.name, users, syncResult);
 			l.stopLogging();
