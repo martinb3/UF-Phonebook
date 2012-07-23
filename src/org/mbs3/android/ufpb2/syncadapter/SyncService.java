@@ -28,7 +28,7 @@ import android.util.Log;
  * @author <a href="mailto:daniel.weisser@gmx.de">Daniel Weisser</a>
  */
 public class SyncService extends Service {
-	private static final String TAG = "LDAPSyncService";
+	private static final String TAG = "SyncService";
 
 	private static final Object sSyncAdapterLock = new Object();
 	private static SyncAdapter sSyncAdapter = null;
@@ -45,7 +45,7 @@ public class SyncService extends Service {
 
 	@Override
 	public IBinder onBind(Intent intent) {
-		Log.v(TAG, "onBind");
+		Log.v(TAG, "onBind with " + intent.toString());
 		return sSyncAdapter.getSyncAdapterBinder();
 	}
 }

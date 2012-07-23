@@ -38,7 +38,6 @@ import android.content.Context;
 import android.content.SyncResult;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 
 /**
  * SyncAdapter implementation for synchronizing LDAP contacts to the platform ContactOperations provider.
@@ -65,8 +64,6 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 		l.startLogging(getContext());
 		
 		l.d(TAG,"Start the sync");
-		
-		
 		HashMap<Contact, Long> users = new HashMap<Contact, Long>();
 		String authtoken = null;
 		try {
@@ -108,7 +105,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 			
 			ContactManager cm = new ContactManager(l);
 			HashMap<Long, ArrayList<String>> emails = cm.getAllAccountEmailAddresses(mContext.getContentResolver(), account.name);
-			Log.d(TAG, "Now that I've found all emails, calling fetch for LDAP data");
+			l.d(TAG, "Now that I've found all emails, calling fetch for LDAP data");
 			users = LDAPUtilities.fetchContacts(ldapServer, emails, baseDN, searchFilter, mappingBundle, mLastUpdated, this.getContext());
 			
 			if (users == null) {
@@ -125,11 +122,11 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 			l.stopLogging();
 		} catch (final AuthenticatorException e) {
 			syncResult.stats.numParseExceptions++;
-			Log.e(TAG, "AuthenticatorException", e);
+			l.e(TAG, "AuthenticatorException", e);
 		} catch (final OperationCanceledException e) {
-			Log.e(TAG, "OperationCanceledExcetpion", e);
+			l.e(TAG, "OperationCanceledExcetpion", e);
 		} catch (final IOException e) {
-			Log.e(TAG, "IOException", e);
+			l.e(TAG, "IOException", e);
 			syncResult.stats.numIoExceptions++;
 		}
 		

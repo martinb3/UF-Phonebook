@@ -25,6 +25,12 @@
             android:summary="Suppress missing account warnings"
             android:title="Don&apos;t remind" />
 
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="pref_throw_sync_exception"
+            android:summary="Create a fake sync exception"
+            android:title="Simulate sync exception" />
+        
         <!--
         ListPreference 
             android:key="updates_interval"

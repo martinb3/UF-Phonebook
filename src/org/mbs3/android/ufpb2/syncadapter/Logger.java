@@ -59,26 +59,13 @@ public class Logger {
 		return sdf.format(cal.getTime());
 	}
 
-	public void d(String tag, String message) {
-		if(!shouldLog(ctx))
-			return;
-
-		try {
-			Log.d(tag, message);
-			if (f != null) {
-				f.write(now() + ": " + message + "\n");
-				f.flush();
-			}
-		} catch (IOException e) {
-			Log.e("TAG", e.getMessage(), e);
-		}
-	}
-
 	public void startLogging(Context ctx) {
 		this.ctx=ctx;
 		
 		// if we were told not to log, this should be a no-op after we save the ctx
-		if(!shouldLog(ctx.getApplicationContext()))
+		boolean shouldDebugLog = shouldLog(ctx.getApplicationContext());
+		Log.v(TAG,"Logger invoked, preferences dictate I " + (shouldDebugLog ? "will" : "won't") + " write to the debug log");
+		if(!shouldDebugLog)
 			return;
 		
 		if(!Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
@@ -118,8 +105,96 @@ public class Logger {
 		
 		SharedPreferences p = Util.getPrefs(ctx);
 		boolean shouldDebugLog = p.getBoolean(ctx.getString(R.string.pref_log_to_sd), false);
-		Log.d(TAG,"Logger invoked, preferences dictate I " + (shouldDebugLog ? "will" : "won't") + " write to the debug log");
 		return shouldDebugLog;
 	}
+	
+	public void d(String tag, String message) {
+		d(tag,message,null);
+	}
+	public void d(String tag, String message, Throwable throwable) {
+		if(!shouldLog(ctx))
+			return;
+
+		try {
+			if(throwable == null)
+				Log.d(tag, message);
+			else
+				Log.d(tag,message,throwable);
+			
+			if (f != null) {
+				f.write(tag + ": " + now() + ": " + message + "\n");
+				f.flush();
+			}
+		} catch (IOException e) {
+			Log.e(TAG, e.getMessage(), e);
+		}
+	}
+
+	public void e(String tag, String message) {
+		e(tag,message,null);
+	}
+	public void e(String tag, String message, Throwable throwable) {
+		if(!shouldLog(ctx))
+			return;
+
+		try {
+			if(throwable == null)
+				Log.e(tag, message);
+			else
+				Log.e(tag,message,throwable);
+			
+			if (f != null) {
+				f.write(tag + ": " + now() + ": " + message + "\n");
+				f.flush();
+			}
+		} catch (IOException e) {
+			Log.e(TAG, e.getMessage(), e);
+		}
+	}
+	
+	public void v(String tag, String message) {
+		v(tag,message,null);
+	}
+	public void v(String tag, String message, Throwable throwable) {
+		if(!shouldLog(ctx))
+			return;
+
+		try {
+			if(throwable == null)
+				Log.v(tag, message);
+			else
+				Log.v(tag,message,throwable);
+			
+			if (f != null) {
+				f.write(tag + ": " + now() + ": " + message + "\n");
+				f.flush();
+			}
+		} catch (IOException e) {
+			Log.e(TAG, e.getMessage(), e);
+		}
+	}
+
+	public void i(String tag, String message) {
+		i(tag,message,null);
+	}
+	public void i(String tag, String message, Throwable throwable) {
+		if(!shouldLog(ctx))
+			return;
+
+		try {
+			if(throwable == null)
+				Log.i(tag, message);
+			else
+				Log.i(tag,message,throwable);
+			
+			if (f != null) {
+				f.write(tag + ": " + now() + ": " + message + "\n");
+				f.flush();
+			}
+		} catch (IOException e) {
+			Log.e(TAG, e.getMessage(), e);
+		}
+	}
+
 
 }

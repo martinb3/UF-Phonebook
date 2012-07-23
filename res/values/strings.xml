@@ -24,6 +24,7 @@
     <!-- Preferences -->
     <string name="pref_log_to_sd">pref_log_to_sd</string>
     <string name="pref_do_not_remind">pref_do_not_remind</string>
+    <string name="pref_throw_sync_exception">pref_throw_sync_exception</string>
 
     <!-- ProfileActivity -->
     <string name="profile_activity_account">To sync your existing contacts with the UF Phonebook, you must add an account of type "UF Phonebook Sync." Press OK to be taken to the accounts screen now.</string>
@@ -72,5 +73,7 @@
     <string name="authenticator_activity_title">LDAP Server settings</string>
     <string name="preference_activity_title">UF Phonebook Sync Preferences</string>
     <string name="do_not_remind_me_again_">Do not remind me again.</string>
+    <string name="email_error_report">Email error report</string>
+    <string name="dismiss">Dismiss</string>
 
 </resources>

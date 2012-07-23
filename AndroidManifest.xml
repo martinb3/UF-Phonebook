@@ -108,6 +108,13 @@
 				someone who explicitly knows the class name
             -->
         </activity>
+        
+        <activity android:name="org.mbs3.android.ufpb2.activity.SyncErrorActivity"
+        	android:label="UF Phonebook Sync Error"
+	        android:launchMode="singleTask"
+	        android:taskAffinity=""
+	        android:excludeFromRecents="true">
+		</activity>
     </application>
 
 </manifest>

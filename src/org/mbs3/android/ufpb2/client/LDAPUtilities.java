@@ -24,7 +24,10 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import org.mbs3.android.ufpb2.R;
+import org.mbs3.android.ufpb2.Util;
+import org.mbs3.android.ufpb2.activity.SyncErrorActivity;
 import org.mbs3.android.ufpb2.authenticator.LDAPAuthenticatorActivity;
+import org.mbs3.android.ufpb2.syncadapter.Logger;
 import org.mbs3.android.ufpb2.syncadapter.SyncService;
 
 import android.app.Notification;
@@ -32,9 +35,9 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 
 import com.unboundid.ldap.sdk.LDAPConnection;
 import com.unboundid.ldap.sdk.LDAPException;
@@ -121,10 +124,25 @@ public class LDAPUtilities {
 		final HashMap<String,Long> DNs = new HashMap<String,Long>();
 		final HashMap<Contact,Long> friendList = new HashMap<Contact,Long>();
 		
-		Log.d(TAG, "fetchContacts: " + emails.size() +  " accounts that have email lists");
+		Logger l = new Logger();
+		l.startLogging(context);
+		
+		l.d(TAG, "fetchContacts: " + emails.size() +  " accounts that have email lists");
 		
 		LDAPConnection connection = null;
 		try {
+			
+			SharedPreferences p = Util.getPrefs(context);
+			boolean shouldThrowException = p.getBoolean(context.getString(R.string.pref_throw_sync_exception), false);
+
+			// simulate a sync exception
+			if(shouldThrowException) {
+				Exception ex = new Exception("Error: Keyboard not found. Press F1 to continue.");
+				ex.fillInStackTrace();
+				throw ex;
+			}
+			
+			
 			connection = ldapServer.getConnection();
 
 			// we do the raw contact ID so we can force an aggregation later
@@ -132,33 +150,33 @@ public class LDAPUtilities {
 				Long origin = entry.getKey();
 				
 				ArrayList<String> allAddr = entry.getValue();
-				Log.d(TAG, "fetchContacts: " + allAddr.size() +  " emails for account " + origin);
+				l.d(TAG, "fetchContacts: " + allAddr.size() +  " emails for account " + origin);
 				
 				
 				for(String addr : allAddr ) {
-					String emailFilter = "(&(mail="+addr+")"+searchFilter+")";
-					Log.d(TAG, "fetchContacts: Attempting search using filter "+emailFilter);
+					String emailFilter = "(&(mail="+escapeLDAPSearchFilter(addr)+")"+searchFilter+")";
+					l.d(TAG, "fetchContacts: Attempting search using filter "+emailFilter);
 					
 					SearchResult searchResult = connection.search(baseDN, SearchScope.SUB, emailFilter, getUsedAttributes(mappingBundle));
 					List<SearchResultEntry> results = searchResult.getSearchEntries();
 					if(results.size() == 1) {
 						SearchResultEntry e = results.get(0);
 						DNs.put(e.getDN(), origin);
-						Log.i(TAG, "fetchContacts: Found in directory: (from raw contact id "+origin+") " + addr + ", dn="+e.getDN()+")");
+						l.i(TAG, "fetchContacts: Found in directory: (from raw contact id "+origin+") " + addr + ", dn="+e.getDN()+")");
 					}
 					else {
-						Log.i(TAG, "fetchContacts: Not found in directory: " + addr + ", or more than one result found (n="+results.size()+")");
+						l.i(TAG, "fetchContacts: Not found in directory: " + addr + ", or more than one result found (n="+results.size()+")");
 					}
 				}
 			}
 
 
-			Log.i(TAG, "fetchContacts: Searching for " + DNs.size() + " DNs in the directory");
+			l.i(TAG, "fetchContacts: Searching for " + DNs.size() + " DNs in the directory");
 			
 			for(final Entry<String,Long> entry : DNs.entrySet()) {
 				String dn = entry.getKey();
 
-				Log.i(TAG, "fetchContacts: DN search base string: " + dn);
+				l.i(TAG, "fetchContacts: DN search base string: " + dn);
 				SearchResult searchResult = connection.search(dn, SearchScope.BASE, searchFilter, getUsedAttributes(mappingBundle));
 				//Log.i(TAG, searchResult.getEntryCount() + " entries returned for this DN.");
 
@@ -169,23 +187,30 @@ public class LDAPUtilities {
 					}
 				}
 			}
-		} catch (LDAPException e) {
-			Log.v(TAG, "LDAPException on fetching contacts", e);
+		} catch (Throwable throwable) {
+			l.v(TAG, "Exception on fetching contacts", throwable);
 			NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 			int icon = R.drawable.icon;
 			CharSequence tickerText = "Error on " + org.mbs3.android.ufpb2.Constants.ACCOUNT_NAME;
+			
+			Intent notificationIntent = new Intent(context, SyncErrorActivity.class);
+			notificationIntent.putExtra("throwable", throwable);
+			
+			PendingIntent contentIntent = PendingIntent.getActivity(context, 0, notificationIntent, 0);
+
 			Notification notification = new Notification(icon, tickerText, System.currentTimeMillis());
-			Intent notificationIntent = new Intent(context, SyncService.class);
-			PendingIntent contentIntent = PendingIntent.getService(context, 0, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
-			notification.setLatestEventInfo(context, tickerText, e.getMessage().replace("\\n", " "), contentIntent);
+			notification.setLatestEventInfo(context, tickerText, throwable.getMessage().replace("\\n", " "), contentIntent);
 			notification.flags = Notification.FLAG_AUTO_CANCEL;
 			mNotificationManager.notify(0, notification);
+			l.stopLogging();
 			return null;
 		} finally {
 			if (connection != null) {
 				connection.close();
 			}
 		}
+		
+		l.stopLogging();
 
 		return friendList;
 	}
@@ -233,6 +258,8 @@ public class LDAPUtilities {
 	 * @return {code false} if the authentication fails, {code true} otherwise
 	 */
 	public static boolean authenticate(LDAPServerInstance ldapServer, Handler handler, final Context context) {
+		Logger l = new Logger();
+		l.startLogging(context);
 		LDAPConnection connection = null;
 		try {
 			connection = ldapServer.getConnection();
@@ -244,17 +271,21 @@ public class LDAPUtilities {
 				}
 
 				sendResult(baseDNs, true, handler, context, null);
+				l.stopLogging();
 				return true;
 			}
 		} catch (LDAPException e) {
-			Log.e(TAG, "Error authenticating", e);
+			l.e(TAG, "Error authenticating", e);
 			sendResult(null, false, handler, context, e.getMessage());
+			l.stopLogging();
 			return false;
 		} finally {
 			if (connection != null) {
 				connection.close();
 			}
 		}
+		
+		l.stopLogging();
 		return false;
 	}
 
@@ -275,7 +306,7 @@ public class LDAPUtilities {
 	 *            The caller Activity's context
 	 * @return List of all LDAP contacts
 	 */
-	public static HashSet<Contact> searchContacts(final LDAPServerInstance ldapServer, final String searchTerms, final String baseDN, final String searchFilter, final Bundle mappingBundle, final Context context) {
+	public static HashSet<Contact> searchContacts(final LDAPServerInstance ldapServer, final String _searchTerms, final String baseDN, final String searchFilter, final Bundle mappingBundle, final Context context) {
 
 		//Feb 12 14:30:04 dir8 slapd[11475]: conn=1099868 op=1 SRCH base="ou=People,dc=ufl,dc=edu" scope=2 deref=2 filter="(&(|(cn=foo*)(sn=foo*)(uid=foo)(mail=foo@*))(&(!(eduPersonPrimaryAffiliation=affiliate))(!(eduPersonPrimaryAffiliation=-*-))))"
 
@@ -283,7 +314,11 @@ public class LDAPUtilities {
 		final HashSet<String> DNs = new HashSet<String>();
 		final HashSet<Contact> friendList = new HashSet<Contact>();
 		
-		Log.d(TAG, "searchContacts: " + searchTerms +  " terms");
+		Logger l = new Logger();
+		l.startLogging(context);
+		
+		String searchTerms = escapeLDAPSearchFilter(_searchTerms);
+		l.d(TAG, "searchContacts: " + searchTerms +  " terms");
 		
 		LDAPConnection connection = null;
 		try {
@@ -291,19 +326,20 @@ public class LDAPUtilities {
 			String emailFilter = "(&(&(|(cn="+searchTerms+"*)(sn="+searchTerms+"*)(uid="+searchTerms+")(mail="+searchTerms+"@*))(&(!(eduPersonPrimaryAffiliation=affiliate))(!(eduPersonPrimaryAffiliation=-*-))))"+searchFilter+")";
 			SearchResult searchResult1 = connection.search(baseDN, SearchScope.SUB, emailFilter, "dn");
 			List<SearchResultEntry> results = searchResult1.getSearchEntries();
-			Log.i(TAG, "fetchContacts: Found " + results.size() + " results for this contact (filter was "+emailFilter+")");
+			l.i(TAG, "fetchContacts: Found " + results.size() + " results for this contact (filter was "+emailFilter+")");
 
 			// don't get more than 50 DNs
 			for(int i = 0; i < results.size() && i < 50; i++) {
 				SearchResultEntry result = results.get(i);
-				DNs.add(result.getDN());
-				Log.i(TAG, "fetchContacts: Found in directory: dn="+result.getDN()+")");
+				String resDN = result.getDN();
+				DNs.add(resDN);
+				l.i(TAG, "fetchContacts: Found in directory: dn="+resDN+")");
 			}
 	
-			Log.i(TAG, "fetchContacts: Searching for " + DNs.size() + " DNs in the directory");
+			l.i(TAG, "fetchContacts: Searching for " + DNs.size() + " DNs in the directory");
 			for(final String dn : DNs) {
 	
-				Log.i(TAG, "fetchContacts: DN search base string: " + dn);
+				l.i(TAG, "fetchContacts: DN search base string: " + dn);
 				SearchResult searchResult2 = connection.search(dn, SearchScope.BASE, searchFilter, getUsedAttributes(mappingBundle));
 				//Log.i(TAG, searchResult.getEntryCount() + " entries returned for this DN.");
 	
@@ -315,7 +351,7 @@ public class LDAPUtilities {
 				}
 			}
 		} catch (LDAPException e) {
-			Log.v(TAG, "LDAPException on fetching contacts", e);
+			l.v(TAG, "LDAPException on fetching contacts", e);
 			NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 			int icon = R.drawable.icon;
 			CharSequence tickerText = "Error on " + org.mbs3.android.ufpb2.Constants.ACCOUNT_NAME;
@@ -325,6 +361,7 @@ public class LDAPUtilities {
 			notification.setLatestEventInfo(context, tickerText, e.getMessage().replace("\\n", " "), contentIntent);
 			notification.flags = Notification.FLAG_AUTO_CANCEL;
 			mNotificationManager.notify(0, notification);
+			l.stopLogging();
 			return null;
 		} finally {
 			if (connection != null) {
@@ -332,6 +369,75 @@ public class LDAPUtilities {
 			}
 		}
 	
+		l.stopLogging();
 		return friendList;
 	}
+	
+	
+	   public static final String escapeLDAPSearchFilter(String filter) {
+	       StringBuilder sb = new StringBuilder();
+	       for (int i = 0; i < filter.length(); i++) {
+	           char curChar = filter.charAt(i);
+	           switch (curChar) {
+	               case '\\':
+	                   sb.append("\\5c");
+	                   break;
+	               case '*':
+	                   sb.append("\\2a");
+	                   break;
+	               case '(':
+	                   sb.append("\\28");
+	                   break;
+	               case ')':
+	                   sb.append("\\29");
+	                   break;
+	               case '\u0000': 
+	                   sb.append("\\00"); 
+	                   break;
+	               default:
+	                   sb.append(curChar);
+	           }
+	       }
+	       return sb.toString();
+	   }
+
+
+	   public static String escapeDN(String name) {
+		   StringBuilder sb = new StringBuilder(); // If using JDK >= 1.5 consider using StringBuilder
+	       if ((name.length() > 0) && ((name.charAt(0) == ' ') || (name.charAt(0) == '#'))) {
+	           sb.append('\\'); // add the leading backslash if needed
+	       }
+	       for (int i = 0; i < name.length(); i++) {
+	           char curChar = name.charAt(i);
+	           switch (curChar) {
+	               case '\\':
+	                   sb.append("\\\\");
+	                   break;
+	               case ',':
+	                   sb.append("\\,");
+	                   break;
+	               case '+':
+	                   sb.append("\\+");
+	                   break;
+	               case '"':
+	                   sb.append("\\\"");
+	                   break;
+	               case '<':
+	                   sb.append("\\<");
+	                   break;
+	               case '>':
+	                   sb.append("\\>");
+	                   break;
+	               case ';':
+	                   sb.append("\\;");
+	                   break;
+	               default:
+	                   sb.append(curChar);
+	           }
+	       }
+	       if ((name.length() > 1) && (name.charAt(name.length() - 1) == ' ')) {
+	           sb.insert(sb.length() - 1, '\\'); // add the trailing backslash if needed
+	       }
+	       return sb.toString();
+	   }
 }
