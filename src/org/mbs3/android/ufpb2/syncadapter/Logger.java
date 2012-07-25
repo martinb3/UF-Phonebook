@@ -59,31 +59,36 @@ public class Logger {
 		return sdf.format(cal.getTime());
 	}
 
-	public void startLogging(Context ctx) {
-		this.ctx=ctx;
-		
-		// if we were told not to log, this should be a no-op after we save the ctx
-		boolean shouldDebugLog = shouldLog(ctx.getApplicationContext());
-		Log.v(TAG,"Logger invoked, preferences dictate I " + (shouldDebugLog ? "will" : "won't") + " write to the debug log");
-		if(!shouldDebugLog)
-			return;
-		
-		if(!Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
-			Log.d(TAG, "Cannot write to debug log as external media is not mounted or is read only");
-			return;
-		}
-		
-		File sdCard = Environment.getExternalStorageDirectory();
-		File dir = new File(sdCard.getAbsolutePath() + Constants.SDCARD_FOLDER);
-		dir.mkdirs();
-		File file = new File(dir, nowFile() + "_sync.log");
-
+	public void startLogging(Context aCtx) {
 		try {
+			// try to store the application context
+			if (aCtx != null) {
+				this.ctx = aCtx.getApplicationContext();
+			}
+
+			// if we were told not to log, this should be a no-op after we save the ctx
+			boolean shouldDebugLog = shouldLog(ctx);
+			Log.v(TAG, "Logger invoked, preferences dictate I " + (shouldDebugLog ? "will" : "won't") + " write to the debug log");
+			if (!shouldDebugLog)
+				return;
+
+			if (!Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
+				Log.d(TAG, "Cannot write to debug log as external media is not mounted or is read only");
+				return;
+			}
+
+			File sdCard = Environment.getExternalStorageDirectory();
+			File dir = new File(sdCard.getAbsolutePath() + Constants.SDCARD_FOLDER);
+			dir.mkdirs();
+			File file = new File(dir, nowFile() + "_sync.log");
+
 			f = new BufferedWriter(new FileWriter(file));
 		} catch (FileNotFoundException e) {
-			Log.e("TAG", e.getMessage(), e);
+			Log.e(TAG, e.getMessage(), e);
 		} catch (IOException e) {
-			Log.e("TAG", e.getMessage(), e);
+			Log.e(TAG, e.getMessage(), e);
+		} catch (Throwable throwable) {
+			Log.e(TAG, "Start logging failed", throwable);
 		}
 	}
 
@@ -93,34 +98,43 @@ public class Logger {
 				f.close();
 			}
 		} catch (IOException e) {
-			Log.e("TAG", e.getMessage(), e);
+			Log.e(TAG, e.getMessage(), e);
+		} catch (Throwable throwable) {
+			Log.e(TAG, "Start logging failed", throwable);
 		}
 	}
-	
+
 	private static boolean shouldLog(Context ctx) {
-		if(ctx == null) {
-			Log.d(TAG,"Logger received null context, no debug log will be written");
-			return false;
+		try {
+			if (ctx == null) {
+				Log.d(TAG, "Logger received null context, no debug log will be written");
+				return false;
+			}
+
+			SharedPreferences p = Util.getPrefs(ctx);
+			boolean shouldDebugLog = p.getBoolean(ctx.getString(R.string.pref_log_to_sd), false);
+			return shouldDebugLog;
+		} catch (Throwable throwable) {
+			Log.e(TAG, "Start logging failed", throwable);
 		}
-		
-		SharedPreferences p = Util.getPrefs(ctx);
-		boolean shouldDebugLog = p.getBoolean(ctx.getString(R.string.pref_log_to_sd), false);
-		return shouldDebugLog;
+
+		return false;
 	}
-	
+
 	public void d(String tag, String message) {
-		d(tag,message,null);
+		d(tag, message, null);
 	}
+
 	public void d(String tag, String message, Throwable throwable) {
-		if(!shouldLog(ctx))
+		if (!shouldLog(ctx))
 			return;
 
 		try {
-			if(throwable == null)
+			if (throwable == null)
 				Log.d(tag, message);
 			else
-				Log.d(tag,message,throwable);
-			
+				Log.d(tag, message, throwable);
+
 			if (f != null) {
 				f.write(tag + ": " + now() + ": " + message + "\n");
 				f.flush();
@@ -131,18 +145,19 @@ public class Logger {
 	}
 
 	public void e(String tag, String message) {
-		e(tag,message,null);
+		e(tag, message, null);
 	}
+
 	public void e(String tag, String message, Throwable throwable) {
-		if(!shouldLog(ctx))
+		if (!shouldLog(ctx))
 			return;
 
 		try {
-			if(throwable == null)
+			if (throwable == null)
 				Log.e(tag, message);
 			else
-				Log.e(tag,message,throwable);
-			
+				Log.e(tag, message, throwable);
+
 			if (f != null) {
 				f.write(tag + ": " + now() + ": " + message + "\n");
 				f.flush();
@@ -151,20 +166,21 @@ public class Logger {
 			Log.e(TAG, e.getMessage(), e);
 		}
 	}
-	
+
 	public void v(String tag, String message) {
-		v(tag,message,null);
+		v(tag, message, null);
 	}
+
 	public void v(String tag, String message, Throwable throwable) {
-		if(!shouldLog(ctx))
+		if (!shouldLog(ctx))
 			return;
 
 		try {
-			if(throwable == null)
+			if (throwable == null)
 				Log.v(tag, message);
 			else
-				Log.v(tag,message,throwable);
-			
+				Log.v(tag, message, throwable);
+
 			if (f != null) {
 				f.write(tag + ": " + now() + ": " + message + "\n");
 				f.flush();
@@ -175,18 +191,19 @@ public class Logger {
 	}
 
 	public void i(String tag, String message) {
-		i(tag,message,null);
+		i(tag, message, null);
 	}
+
 	public void i(String tag, String message, Throwable throwable) {
-		if(!shouldLog(ctx))
+		if (!shouldLog(ctx))
 			return;
 
 		try {
-			if(throwable == null)
+			if (throwable == null)
 				Log.i(tag, message);
 			else
-				Log.i(tag,message,throwable);
-			
+				Log.i(tag, message, throwable);
+
 			if (f != null) {
 				f.write(tag + ": " + now() + ": " + message + "\n");
 				f.flush();
@@ -195,6 +212,5 @@ public class Logger {
 			Log.e(TAG, e.getMessage(), e);
 		}
 	}
-
 
 }
