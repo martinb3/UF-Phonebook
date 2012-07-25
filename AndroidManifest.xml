@@ -2,8 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="org.mbs3.android.ufpb2"
-    android:versionCode="9"
-    android:versionName="2.0.9" >
+    android:versionCode="10"
+    android:versionName="2.0.10" >
 
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.USE_CREDENTIALS" />
