@@ -163,7 +163,7 @@ public class ApplicationActivity extends ListActivity {
 			mappingBundle.putString(Contact.UFID, mAccountManager.getUserData(account, LDAPAuthenticatorActivity.PARAM_MAPPING + Contact.UFID));
 			mappingBundle.putString(Contact.PRIMARYAFFILIATION, mAccountManager.getUserData(account, LDAPAuthenticatorActivity.PARAM_MAPPING + Contact.PRIMARYAFFILIATION));
 			
-			HashSet<Contact> users = LDAPUtilities.searchContacts(ldapServer, searchTerms, baseDN, searchFilter, mappingBundle, mContext);
+			HashSet<Contact> users = LDAPUtilities.uiSearchContacts(ldapServer, searchTerms, baseDN, searchFilter, mappingBundle, mContext);
 			
 			if(users != null) {
 				// update platform contacts.

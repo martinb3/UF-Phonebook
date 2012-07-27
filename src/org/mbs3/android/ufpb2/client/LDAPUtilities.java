@@ -313,7 +313,7 @@ public class LDAPUtilities {
 	 *            The caller Activity's context
 	 * @return List of all LDAP contacts
 	 */
-	public static HashSet<Contact> searchContacts(final LDAPServerInstance ldapServer, final String _searchTerms, final String baseDN, final String searchFilter, final Bundle mappingBundle, final Context context) {
+	public static HashSet<Contact> uiSearchContacts(final LDAPServerInstance ldapServer, final String _searchTerms, final String baseDN, final String searchFilter, final Bundle mappingBundle, final Context context) {
 
 		//Feb 12 14:30:04 dir8 slapd[11475]: conn=1099868 op=1 SRCH base="ou=People,dc=ufl,dc=edu" scope=2 deref=2 filter="(&(|(cn=foo*)(sn=foo*)(uid=foo)(mail=foo@*))(&(!(eduPersonPrimaryAffiliation=affiliate))(!(eduPersonPrimaryAffiliation=-*-))))"
 
@@ -334,7 +334,7 @@ public class LDAPUtilities {
 			List<SearchResultEntry> results = searchResult1.getSearchEntries();
 			l.i(TAG, "fetchContacts: Found " + results.size() + " results for this contact (filter was "+emailFilter+")");
 
-			// don't get more than 50 DNs
+			// don't get more than 50 DNs for a single user (like whoa!)
 			for(int i = 0; i < results.size() && i < 50; i++) {
 				SearchResultEntry result = results.get(i);
 				String resDN = result.getDN();
@@ -346,15 +346,18 @@ public class LDAPUtilities {
 			for(final String dn : DNs) {
 	
 				l.i(TAG, "fetchContacts: DN search base string: " + dn);
-				SearchResult searchResult2 = connection.search(dn, SearchScope.BASE, searchFilter, getUsedAttributes(mappingBundle));
-				//Log.i(TAG, searchResult.getEntryCount() + " entries returned for this DN.");
-	
-				for (SearchResultEntry e : searchResult2.getSearchEntries()) {
-					Contact u = Contact.valueOf(e, mappingBundle);
-					if (u != null) {
-						friendList.add(u);
+				try { 
+					SearchResult searchResult2 = connection.search(dn, SearchScope.BASE, searchFilter, getUsedAttributes(mappingBundle));
+				
+					//Log.i(TAG, searchResult.getEntryCount() + " entries returned for this DN.");
+		
+					for (SearchResultEntry e : searchResult2.getSearchEntries()) {
+						Contact u = Contact.valueOf(e, mappingBundle);
+						if (u != null) {
+							friendList.add(u);
+						}
 					}
-				}
+				} catch (Throwable t) {} // swallow a single DN search failure, s'ok
 			}
 		} catch (LDAPException e) {
 			l.v(TAG, "LDAPException on fetching contacts", e);
