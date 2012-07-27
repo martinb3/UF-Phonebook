@@ -60,15 +60,6 @@ import android.util.Log;
  */
 public class ContactManager {
 	private static final String TAG = "ContactManager";
-	private Logger l;
-
-	public ContactManager() {
-		this(new Logger());
-	}
-	
-	public ContactManager(Logger l) {
-		this.l = l;
-	}
 
 	/**
 	 * Synchronize raw contacts
@@ -85,6 +76,7 @@ public class ContactManager {
 	public synchronized void syncContacts(Context context, String accountName, HashMap<Contact, Long> contacts, SyncResult syncResult) {
 		final ContentResolver resolver = context.getContentResolver();
 
+		Logger l = Logger.getLogger(context);
 		// Get all phone contacts for the LDAP account
 		HashMap<String, Long> contactsOnPhone = getAllContactsOnPhone(resolver, accountName);
 		
@@ -96,7 +88,7 @@ public class ContactManager {
 				Long contactId = contactsOnPhone.get(contact.getDn());
 				String msg = "syncContacts: Update contact under account "+accountName+": " + contact + " (" + contactId + ")";
 				l.d(TAG, msg);
-				updateContact(resolver, contactId, contact);
+				updateContact(context, resolver, contactId, contact);
 				
 				// update aggregation 
 				// bind our contactId and entry.getValue() (contact id from origin)
@@ -107,7 +99,7 @@ public class ContactManager {
 			} else {
 				String msg = "syncContacts: Add contact under account "+accountName+": " + contact;
 				l.d(TAG,msg);
-				Long contactId = addContact(resolver, contact);
+				Long contactId = addContact(context, resolver, contact);
 				
 				// update aggregation
 				// bind our contactId and entry.getValue() (contact id from origin)
@@ -208,7 +200,7 @@ public class ContactManager {
 		return null;
 	}
 	
-	private void updateContact(ContentResolver resolver, long rawContactId, Contact contact) {
+	private void updateContact(Context context, ContentResolver resolver, long rawContactId, Contact contact) {
 		ArrayList<ContentProviderOperation> ops = new ArrayList<ContentProviderOperation>();
 
 		Contact existingContact = new Contact();
@@ -220,7 +212,7 @@ public class ContactManager {
 			final Cursor c = resolver.query(Data.CONTENT_URI, projection, selection, new String[] { rawContactId + "" }, null);
 
 			mapCursorToContact(c, existingContact);
-			prepareFields(rawContactId, contact, existingContact, ops, false);
+			prepareFields(context, rawContactId, contact, existingContact, ops, false);
 
 			if (ops.size() > 0) {
 				resolver.applyBatch(ContactsContract.AUTHORITY, ops);
@@ -283,7 +275,8 @@ public class ContactManager {
 	 * @param accountName
 	 * @param contact
 	 */
-	private long addContact(ContentResolver resolver, Contact contact) {
+	private long addContact(Context context, ContentResolver resolver, Contact contact) {
+		Logger l = Logger.getLogger(context);
 		ArrayList<ContentProviderOperation> ops = new ArrayList<ContentProviderOperation>();
 
 		Uri uri = addCallerIsSyncAdapterFlag(RawContacts.CONTENT_URI);
@@ -299,7 +292,7 @@ public class ContactManager {
 		ContentProviderOperation i1 = builder.build();
 		
 		ops.add(i1);
-		prepareFields(-1, contact, new Contact(), ops, true);
+		prepareFields(context, -1, contact, new Contact(), ops, true);
 
 		// Now create the contact with a single batch operation
 		try {
@@ -320,7 +313,8 @@ public class ContactManager {
 		return -1;
 	}
 
-	private void prepareFields(long rawContactId, Contact newC, Contact existingC, ArrayList<ContentProviderOperation> ops, boolean isNew) {
+	private void prepareFields(Context context, long rawContactId, Contact newC, Contact existingC, ArrayList<ContentProviderOperation> ops, boolean isNew) {
+		Logger l = Logger.getLogger(context);
 		ContactMerger contactMerger = new ContactMerger(rawContactId, newC, existingC, ops, l);
 		contactMerger.updateName();
 		contactMerger.updateMail(Email.TYPE_WORK);

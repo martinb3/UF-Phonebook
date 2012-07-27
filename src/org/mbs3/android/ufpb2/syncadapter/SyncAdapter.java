@@ -18,7 +18,6 @@ package org.mbs3.android.ufpb2.syncadapter;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 
 import org.mbs3.android.ufpb2.Constants;
@@ -50,7 +49,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 	private final AccountManager mAccountManager;
 	private final Context mContext;
 
-	private Date mLastUpdated;
+	//private Date mLastUpdated;
 
 	public SyncAdapter(Context context, boolean autoInitialize) {
 		super(context, autoInitialize);
@@ -60,8 +59,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 
 	@Override
 	public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult syncResult) {
-		Logger l = new Logger();
-		l.startLogging(getContext());
+		Logger l = Logger.getLogger(getContext());
 		
 		l.d(TAG,"Start the sync");
 		HashMap<Contact, Long> users = new HashMap<Contact, Long>();
@@ -103,23 +101,20 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 			mappingBundle.putString(Contact.UFID, mAccountManager.getUserData(account, LDAPAuthenticatorActivity.PARAM_MAPPING + Contact.UFID));
 			mappingBundle.putString(Contact.PRIMARYAFFILIATION, mAccountManager.getUserData(account, LDAPAuthenticatorActivity.PARAM_MAPPING + Contact.PRIMARYAFFILIATION));
 			
-			ContactManager cm = new ContactManager(l);
+			ContactManager cm = new ContactManager();
 			HashMap<Long, ArrayList<String>> emails = cm.getAllAccountEmailAddresses(mContext.getContentResolver(), account.name);
 			l.d(TAG, "Now that I've found all emails, calling fetch for LDAP data");
-			users = LDAPUtilities.fetchContacts(ldapServer, emails, baseDN, searchFilter, mappingBundle, mLastUpdated, this.getContext());
-			
-			if (users == null) {
+			HashMap<Contact, Long> resUsers = LDAPUtilities.fetchContacts(ldapServer, emails, baseDN, searchFilter, mappingBundle, this.getContext());
+			if(resUsers != null && resUsers.size() > 0)
+				users.putAll(resUsers);
+			else if(resUsers.size() != 0)
 				syncResult.stats.numIoExceptions++;
-				return;
-			}
-			// update the last synced date.
-			mLastUpdated = new Date();
+			
 			// update platform contacts.
 			String msg = "Calling contactManager's sync contacts for " + account.name + " with " + users.size() + " users";
 			l.d(TAG,msg);
 			
 			cm.syncContacts(mContext, account.name, users, syncResult);
-			l.stopLogging();
 		} catch (final AuthenticatorException e) {
 			syncResult.stats.numParseExceptions++;
 			l.e(TAG, "AuthenticatorException", e);
@@ -129,7 +124,5 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 			l.e(TAG, "IOException", e);
 			syncResult.stats.numIoExceptions++;
 		}
-		
-		try { l.stopLogging(); } catch (Throwable t) {} // swallow
 	}
 }

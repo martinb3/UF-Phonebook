@@ -41,33 +41,38 @@ import android.util.Log;
  */
 public class Logger {
 
-	private BufferedWriter f;
-	private Context ctx;
+	
 	public static final String DATE_FORMAT_NOW = "yyyy-MM-dd HH:mm:ss";
 	public static final String DATE_FORMAT_NOW_FILE = "yyyy-MM-dd-HH-mm-ss";
 	public static final String TAG = "org.mbs3.android.ufpb2.syncadapter.Logger";
+	
+	private static Logger _logger;
 
-	private static String now() {
-		Calendar cal = Calendar.getInstance();
-		SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT_NOW);
-		return sdf.format(cal.getTime());
+	private BufferedWriter _writer;
+	
+	private Context _context;
+	private SimpleDateFormat sdfNow = new SimpleDateFormat(DATE_FORMAT_NOW);
+	private SimpleDateFormat sdfNowFile = new SimpleDateFormat(DATE_FORMAT_NOW_FILE);
+
+	
+	public static synchronized Logger getLogger(Context context) {
+		if(_logger == null) {
+			_logger = new Logger(context);
+		}
+		return _logger;
+	}
+	
+	private Logger(Context context) {
+		if (context != null) {
+			_context = context.getApplicationContext();
+		}
+		// context = null
 	}
 
-	private static String nowFile() {
-		Calendar cal = Calendar.getInstance();
-		SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT_NOW_FILE);
-		return sdf.format(cal.getTime());
-	}
-
-	public void startLogging(Context aCtx) {
+	private synchronized void writeLog(String tag, String msg) {
 		try {
-			// try to store the application context
-			if (aCtx != null) {
-				this.ctx = aCtx.getApplicationContext();
-			}
-
 			// if we were told not to log, this should be a no-op after we save the ctx
-			boolean shouldDebugLog = shouldLog(ctx);
+			boolean shouldDebugLog = shouldLog();
 			Log.v(TAG, "Logger invoked, preferences dictate I " + (shouldDebugLog ? "will" : "won't") + " write to the debug log");
 			if (!shouldDebugLog)
 				return;
@@ -77,12 +82,28 @@ public class Logger {
 				return;
 			}
 
-			File sdCard = Environment.getExternalStorageDirectory();
-			File dir = new File(sdCard.getAbsolutePath() + Constants.SDCARD_FOLDER);
-			dir.mkdirs();
-			File file = new File(dir, nowFile() + "_sync.log");
+			if(_writer == null) {
+				File sdCard = Environment.getExternalStorageDirectory();
+				File dir = new File(sdCard.getAbsolutePath() + Constants.SDCARD_FOLDER);
+				dir.mkdirs();
+				
+				Calendar cal = Calendar.getInstance();
+				
 
-			f = new BufferedWriter(new FileWriter(file));
+				File _logfile = new File(dir, sdfNowFile.format(cal.getTime()) + "_sync.log");
+				_writer = new BufferedWriter(new FileWriter(_logfile));
+			}
+			
+			Calendar cal = Calendar.getInstance();
+			_writer.write(tag + ": " + sdfNow.format(cal.getTime()) + ": " + msg + "\n");
+			_writer.flush();
+				
+			if(_writer != null) {
+				_writer.close();
+				_writer = null;
+			}
+			
+			
 		} catch (FileNotFoundException e) {
 			Log.e(TAG, e.getMessage(), e);
 		} catch (IOException e) {
@@ -92,27 +113,15 @@ public class Logger {
 		}
 	}
 
-	public void stopLogging() {
-		try {
-			if (f != null) {
-				f.close();
-			}
-		} catch (IOException e) {
-			Log.e(TAG, e.getMessage(), e);
-		} catch (Throwable throwable) {
-			Log.e(TAG, "Start logging failed", throwable);
+	private boolean shouldLog() {
+		if (_context == null) {
+			Log.d(TAG, "Logger received null context, no debug log will be written");
+			return false;
 		}
-	}
-
-	private static boolean shouldLog(Context ctx) {
+		
 		try {
-			if (ctx == null) {
-				Log.d(TAG, "Logger received null context, no debug log will be written");
-				return false;
-			}
-
-			SharedPreferences p = Util.getPrefs(ctx);
-			boolean shouldDebugLog = p.getBoolean(ctx.getString(R.string.pref_log_to_sd), false);
+			SharedPreferences p = Util.getPrefs(_context);
+			boolean shouldDebugLog = p.getBoolean(_context.getString(R.string.pref_log_to_sd), false);
 			return shouldDebugLog;
 		} catch (Throwable throwable) {
 			Log.e(TAG, "Start logging failed", throwable);
@@ -126,22 +135,12 @@ public class Logger {
 	}
 
 	public void d(String tag, String message, Throwable throwable) {
-		if (!shouldLog(ctx))
-			return;
+		if (throwable == null)
+			Log.d(tag, message);
+		else
+			Log.d(tag, message, throwable);
 
-		try {
-			if (throwable == null)
-				Log.d(tag, message);
-			else
-				Log.d(tag, message, throwable);
-
-			if (f != null) {
-				f.write(tag + ": " + now() + ": " + message + "\n");
-				f.flush();
-			}
-		} catch (IOException e) {
-			Log.e(TAG, e.getMessage(), e);
-		}
+		writeLog(tag,message);
 	}
 
 	public void e(String tag, String message) {
@@ -149,22 +148,12 @@ public class Logger {
 	}
 
 	public void e(String tag, String message, Throwable throwable) {
-		if (!shouldLog(ctx))
-			return;
+		if (throwable == null)
+			Log.e(tag, message);
+		else
+			Log.e(tag, message, throwable);
 
-		try {
-			if (throwable == null)
-				Log.e(tag, message);
-			else
-				Log.e(tag, message, throwable);
-
-			if (f != null) {
-				f.write(tag + ": " + now() + ": " + message + "\n");
-				f.flush();
-			}
-		} catch (IOException e) {
-			Log.e(TAG, e.getMessage(), e);
-		}
+		writeLog(tag, message);
 	}
 
 	public void v(String tag, String message) {
@@ -172,22 +161,12 @@ public class Logger {
 	}
 
 	public void v(String tag, String message, Throwable throwable) {
-		if (!shouldLog(ctx))
-			return;
+		if (throwable == null)
+			Log.v(tag, message);
+		else
+			Log.v(tag, message, throwable);
 
-		try {
-			if (throwable == null)
-				Log.v(tag, message);
-			else
-				Log.v(tag, message, throwable);
-
-			if (f != null) {
-				f.write(tag + ": " + now() + ": " + message + "\n");
-				f.flush();
-			}
-		} catch (IOException e) {
-			Log.e(TAG, e.getMessage(), e);
-		}
+		writeLog(tag,message);
 	}
 
 	public void i(String tag, String message) {
@@ -195,22 +174,12 @@ public class Logger {
 	}
 
 	public void i(String tag, String message, Throwable throwable) {
-		if (!shouldLog(ctx))
-			return;
+		if (throwable == null)
+			Log.i(tag, message);
+		else
+			Log.i(tag, message, throwable);
 
-		try {
-			if (throwable == null)
-				Log.i(tag, message);
-			else
-				Log.i(tag, message, throwable);
-
-			if (f != null) {
-				f.write(tag + ": " + now() + ": " + message + "\n");
-				f.flush();
-			}
-		} catch (IOException e) {
-			Log.e(TAG, e.getMessage(), e);
-		}
+		writeLog(tag, message);
 	}
 
 }

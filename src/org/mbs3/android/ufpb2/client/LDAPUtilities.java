@@ -17,7 +17,6 @@
 package org.mbs3.android.ufpb2.client;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -118,14 +117,12 @@ public class LDAPUtilities {
 	 *            The caller Activity's context
 	 * @return List of all LDAP contacts
 	 */
-	public static HashMap<Contact,Long> fetchContacts(final LDAPServerInstance ldapServer, final HashMap<Long, ArrayList<String>> emails, final String baseDN, final String searchFilter, final Bundle mappingBundle,
-			final Date mLastUpdated, final Context context) {
+	public static HashMap<Contact,Long> fetchContacts(final LDAPServerInstance ldapServer, final HashMap<Long, ArrayList<String>> emails, final String baseDN, final String searchFilter, final Bundle mappingBundle, final Context context) {
 
 		final HashMap<String,Long> DNs = new HashMap<String,Long>();
 		final HashMap<Contact,Long> friendList = new HashMap<Contact,Long>();
 		
-		Logger l = new Logger();
-		l.startLogging(context);
+		Logger l = Logger.getLogger(context);
 		
 		l.d(TAG, "fetchContacts: " + emails.size() +  " accounts that have email lists");
 		
@@ -145,74 +142,88 @@ public class LDAPUtilities {
 			
 			connection = ldapServer.getConnection();
 
-			// we do the raw contact ID so we can force an aggregation later
+			// first look up all the DNs
 			for(final Entry<Long,ArrayList<String>> entry : emails.entrySet()) {
-				Long origin = entry.getKey();
+				Long origin = entry.getKey(); // raw contact ID
 				
+				// we do the raw contact ID of entry so we can force an aggregation later
 				ArrayList<String> allAddr = entry.getValue();
 				l.d(TAG, "fetchContacts: " + allAddr.size() +  " emails for account " + origin);
-				
 				
 				for(String addr : allAddr ) {
 					String emailFilter = "(&(mail="+escapeLDAPSearchFilter(addr)+")"+searchFilter+")";
 					l.d(TAG, "fetchContacts: Attempting search using filter "+emailFilter);
 					
-					SearchResult searchResult = connection.search(baseDN, SearchScope.SUB, emailFilter, getUsedAttributes(mappingBundle));
-					List<SearchResultEntry> results = searchResult.getSearchEntries();
-					if(results.size() == 1) {
-						SearchResultEntry e = results.get(0);
-						DNs.put(e.getDN(), origin);
-						l.i(TAG, "fetchContacts: Found in directory: (from raw contact id "+origin+") " + addr + ", dn="+e.getDN()+")");
+					try {
+						SearchResult searchResult = connection.search(baseDN, SearchScope.SUB, emailFilter, getUsedAttributes(mappingBundle));
+						List<SearchResultEntry> results = searchResult.getSearchEntries();
+						if(results.size() == 1) {
+							SearchResultEntry e = results.get(0);
+							DNs.put(e.getDN(), origin);
+							l.i(TAG, "fetchContacts: Found in directory: (from raw contact id "+origin+") " + addr + ", dn="+e.getDN()+")");
+						}
+						else {
+							l.i(TAG, "fetchContacts: Not found in directory: " + addr + ", or more than one result found (n="+results.size()+")");
+						}
 					}
-					else {
-						l.i(TAG, "fetchContacts: Not found in directory: " + addr + ", or more than one result found (n="+results.size()+")");
+					catch (Exception exception) {
+						String msg = "fetchContacts: exception while searching for email " + addr + ", skipping";
+						Exception newEx = new Exception(msg); newEx.fillInStackTrace();
+						l.e(TAG, msg, newEx);
 					}
 				}
 			}
 
 
+			// now fetch all the values for the DNs
 			l.i(TAG, "fetchContacts: Searching for " + DNs.size() + " DNs in the directory");
-			
 			for(final Entry<String,Long> entry : DNs.entrySet()) {
 				String dn = entry.getKey();
 
 				l.i(TAG, "fetchContacts: DN search base string: " + dn);
-				SearchResult searchResult = connection.search(dn, SearchScope.BASE, searchFilter, getUsedAttributes(mappingBundle));
-				//Log.i(TAG, searchResult.getEntryCount() + " entries returned for this DN.");
-
-				for (SearchResultEntry e : searchResult.getSearchEntries()) {
-					Contact u = Contact.valueOf(e, mappingBundle);
-					if (u != null) {
-						friendList.put(u, entry.getValue());
+				try {
+					SearchResult searchResult = connection.search(dn, SearchScope.BASE, searchFilter, getUsedAttributes(mappingBundle));
+					l.i(TAG, searchResult.getEntryCount() + " entries returned for this DN.");
+	
+					for (SearchResultEntry e : searchResult.getSearchEntries()) {
+						Contact u = Contact.valueOf(e, mappingBundle);
+						if (u != null) {
+							friendList.put(u, entry.getValue());
+						}
 					}
+				}
+				catch (Exception exception) {
+					String msg = "fetchContacts: exception while searching for DN " + dn + ", skipping";
+					Exception newEx = new Exception(msg); newEx.fillInStackTrace();
+					l.e(TAG, msg, newEx);
 				}
 			}
 		} catch (Throwable throwable) {
 			l.v(TAG, "Exception on fetching contacts", throwable);
-			NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-			int icon = R.drawable.icon;
-			CharSequence tickerText = "Error on " + org.mbs3.android.ufpb2.Constants.ACCOUNT_NAME;
-			
-			Intent notificationIntent = new Intent(context, SyncErrorActivity.class);
-			notificationIntent.putExtra("throwable", throwable);
-			
-			PendingIntent contentIntent = PendingIntent.getActivity(context, 0, notificationIntent, 0);
-
-			Notification notification = new Notification(icon, tickerText, System.currentTimeMillis());
-			notification.setLatestEventInfo(context, tickerText, throwable.getMessage().replace("\\n", " "), contentIntent);
-			notification.flags = Notification.FLAG_AUTO_CANCEL;
-			mNotificationManager.notify(0, notification);
-			l.stopLogging();
-			return null;
-		} finally {
-			if (connection != null) {
-				connection.close();
-			}
+			notify(context,throwable);
 		}
-		
-		l.stopLogging();
+
+		if (connection != null) {
+			connection.close();
+		}
 
 		return friendList;
+	}
+
+	private static void notify(Context context, Throwable throwable) {
+		NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+		int icon = R.drawable.icon;
+		CharSequence tickerText = "Error on " + org.mbs3.android.ufpb2.Constants.ACCOUNT_NAME;
+		
+		Intent notificationIntent = new Intent(context, SyncErrorActivity.class);
+		notificationIntent.putExtra("throwable", throwable);
+		
+		PendingIntent contentIntent = PendingIntent.getActivity(context, 0, notificationIntent, 0);
+
+		Notification notification = new Notification(icon, tickerText, System.currentTimeMillis());
+		notification.setLatestEventInfo(context, tickerText, throwable.getMessage().replace("\\n", " "), contentIntent);
+		notification.flags = Notification.FLAG_AUTO_CANCEL;
+		mNotificationManager.notify(0, notification);
 	}
 
 	private static String[] getUsedAttributes(Bundle mappingBundle) {
@@ -258,8 +269,7 @@ public class LDAPUtilities {
 	 * @return {code false} if the authentication fails, {code true} otherwise
 	 */
 	public static boolean authenticate(LDAPServerInstance ldapServer, Handler handler, final Context context) {
-		Logger l = new Logger();
-		l.startLogging(context);
+		Logger l = Logger.getLogger(context);
 		LDAPConnection connection = null;
 		try {
 			connection = ldapServer.getConnection();
@@ -271,13 +281,11 @@ public class LDAPUtilities {
 				}
 
 				sendResult(baseDNs, true, handler, context, null);
-				l.stopLogging();
 				return true;
 			}
 		} catch (LDAPException e) {
 			l.e(TAG, "Error authenticating", e);
 			sendResult(null, false, handler, context, e.getMessage());
-			l.stopLogging();
 			return false;
 		} finally {
 			if (connection != null) {
@@ -285,7 +293,6 @@ public class LDAPUtilities {
 			}
 		}
 		
-		l.stopLogging();
 		return false;
 	}
 
@@ -314,8 +321,7 @@ public class LDAPUtilities {
 		final HashSet<String> DNs = new HashSet<String>();
 		final HashSet<Contact> friendList = new HashSet<Contact>();
 		
-		Logger l = new Logger();
-		l.startLogging(context);
+		Logger l = Logger.getLogger(context);
 		
 		String searchTerms = escapeLDAPSearchFilter(_searchTerms);
 		l.d(TAG, "searchContacts: " + searchTerms +  " terms");
@@ -361,7 +367,6 @@ public class LDAPUtilities {
 			notification.setLatestEventInfo(context, tickerText, e.getMessage().replace("\\n", " "), contentIntent);
 			notification.flags = Notification.FLAG_AUTO_CANCEL;
 			mNotificationManager.notify(0, notification);
-			l.stopLogging();
 			return null;
 		} finally {
 			if (connection != null) {
@@ -369,7 +374,6 @@ public class LDAPUtilities {
 			}
 		}
 	
-		l.stopLogging();
 		return friendList;
 	}
 	
